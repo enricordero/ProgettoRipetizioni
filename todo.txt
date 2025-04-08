@@ -1,0 +1,6 @@
+- recensioni
+- pagina profilo
+- accesso funzionante (con jwt):
+    - gestire cv pdf
+- fare controlli registrazione (username, mail...)
+- pagina admin

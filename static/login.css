@@ -1,0 +1,86 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #eaeeff;
+}
+
+/* Stile per il form */
+#login-section,
+#register-section-teacher,
+#register-section-student {
+    background-color: white;
+    padding: 30px;
+    border-radius: 15px;
+    /* Bordo rotondo */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    /* Ombra per un effetto elegante */
+    width: 25%;
+    text-align: center;
+}
+
+#login-section>h2,
+#register-section-student>h2,
+#register-section-teacher>h2 {
+    padding: 10px;
+    font-size: 32px;
+    color: #687aff;
+}
+
+#formLogin>p,
+#formRegister>p {
+    font-size: 15px;
+    color: #ccc;
+}
+
+/* Stile per i campi di input */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+select,
+input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    /* Bordo rotondo */
+    border: 2px solid #ddd;
+    box-sizing: border-box;
+}
+
+.file-label{
+    color: #687aff;
+}
+
+.file-label:hover{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* Stile per il pulsante */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #687aff;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    /* Bordo rotondo */
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 200ms;
+}
+
+button:hover {
+    transform: scale(1.01);
+}
+
+a {
+    text-decoration: none;
+    color: #007BFF;
+}
+
+a:hover {
+    text-decoration: underline;
+}
