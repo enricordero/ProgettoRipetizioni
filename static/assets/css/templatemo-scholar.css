@@ -721,7 +721,7 @@ Banner Style
 
 .main-banner .item p {
   color: #fff;
-  width: 65%;
+  width: 75%;
 }
 
 .main-banner .item .buttons {
@@ -850,7 +850,7 @@ Services Style
 
 .services .service-item p {
   color: #4a4a4a;
-  margin-bottom: 25px;
+  margin-bottom: 5px;
 }
 
 /* 
