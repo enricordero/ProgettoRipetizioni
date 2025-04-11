@@ -958,6 +958,7 @@ Courses Style
 
 .courses {
   margin-top: 160px;
+  height: 100%;
 }
 
 .event_filter {
