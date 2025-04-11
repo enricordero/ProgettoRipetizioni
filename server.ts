@@ -140,6 +140,31 @@ app.get('/api/getMaterie', async (req: Request, res: Response) => {
   });
 });
 
+app.get('/api/getMateriePerIndirizzo', async (req: Request, res: Response) => {
+  let collectionName = "subjects"
+  let indirizzo: string = req.query.indirizzo as string
+  let materie: any = []
+
+  const client = new MongoClient(connectionString);
+  await client.connect();
+  const collection = client.db(dbName).collection(collectionName);
+
+  const request = collection.find().toArray();
+  request.catch((err) => {
+    res.status(500).send(`Errore esecuzione query: ${err}`);
+  });
+  request.then((data) => {
+    for (const item in data[0]["indirizzi"]) {
+      if(item == indirizzo)
+        materie.push(data[0]["indirizzi"][item])
+    }
+    res.send(materie);
+  });
+  request.finally(() => {
+    client.close();
+  });
+});
+
 
 
 /* ********************** Default Route & Error Handler ********************** */
