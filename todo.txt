@@ -4,4 +4,3 @@
     - gestire cv pdf
 - fare controlli registrazione (username, mail...)
 - pagina admin
-- fare la sezione indirizzi e materie

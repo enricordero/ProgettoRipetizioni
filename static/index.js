@@ -66,17 +66,3 @@ window.onload = function () {
         }
     }
 }
-/*
-<div1 class="col-lg-4 col-md-6 align-self-center mb-30 event_outer col-md-6 {{sigla.toLowerCase()}}">
-    <div2 class="events_item">
-        <div3 class="thumb">
-            <a href="#"><img src="assets/images/prova.jpg" alt=""></a>
-            <span class="category">prova</span>
-        </div3>
-        <div4 class="down-content">
-            <span class="author">nome_indirizzo</span>
-            <h4>{{materia}}</h4>
-        </div4>
-    </div2>
-</div1>
-*/

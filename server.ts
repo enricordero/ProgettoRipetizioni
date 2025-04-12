@@ -165,7 +165,24 @@ app.get('/api/getMateriePerIndirizzo', async (req: Request, res: Response) => {
   });
 });
 
+app.get('/api/getRichieste', async (req: Request, res: Response) => {
+  let collectionName = "teacherRequests"
 
+  const client = new MongoClient(connectionString);
+  await client.connect();
+  const collection = client.db(dbName).collection(collectionName);
+
+  const request = collection.find().toArray();
+  request.catch((err) => {
+    res.status(500).send(`Errore esecuzione query: ${err}`);
+  });
+  request.then((data) => {
+    res.send(data);
+  });
+  request.finally(() => {
+    client.close();
+  });
+});
 
 /* ********************** Default Route & Error Handler ********************** */
 app.use('/', (req: Request, res: Response) => {
