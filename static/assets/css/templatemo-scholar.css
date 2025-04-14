@@ -1149,19 +1149,19 @@ Team Style
 */
 
 .team {
-  margin-top: 100px;
-    padding-top: 140px;
+  margin-top: 50px;
+  padding-top: 80px;
 }
 
 .team-member {
   position: relative;
 }
 
-.team-member:hover img {
+.team-member>.main-content:hover img {
   top: -120px;
 }
 
-.team-member img {
+.team-member>.main-content>img {
   max-width: 220px;
   border-radius: 50%;
   position: absolute;
@@ -1211,6 +1211,10 @@ Team Style
 .team-member .main-content ul li a:hover {
   background-color: #5163e8;
   color: #fff;
+}
+
+.star-container img{
+  width: 40px;
 }
 
 

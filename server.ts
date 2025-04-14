@@ -165,6 +165,56 @@ app.get('/api/getMateriePerIndirizzo', async (req: Request, res: Response) => {
   });
 });
 
+app.get('/api/getBestProfessors', async (req: Request, res: Response) => {
+  const collectionName = "users";
+  const client = new MongoClient(connectionString);
+
+  try {
+    await client.connect();
+    const collection = client.db(dbName).collection(collectionName);
+
+    const data = await collection.find().toArray();
+
+    // Raccogliamo tutti i teachers in un unico array
+    let allTeachers: any[] = [];
+    data.forEach(user => {
+      if (Array.isArray(user.teachers)) {
+        allTeachers = allTeachers.concat(user.teachers);
+      }
+    });
+
+    // Calcolo media voti ed eliminazione dei non validi
+    const teachersWithMedia = allTeachers
+      .filter(t => typeof t.sommaValutazioni === 'number' && typeof t.numeroValutazioni === 'number' && t.numeroValutazioni > 0)
+      .map(t => ({
+        ...t,
+        mediaVoti: t.sommaValutazioni / t.numeroValutazioni
+      }));
+
+    // Ordina per media voti decrescente e prendi i migliori 4
+    const topTeachers = teachersWithMedia
+      .sort((a, b) => b.mediaVoti - a.mediaVoti)
+      .slice(0, 4);
+
+    // Costruzione della risposta
+    const response = topTeachers.map(teacher => ({
+      nome: teacher.nome,
+      cognome: teacher.cognome,
+      citta: teacher.citta,
+      email: teacher.email,
+      materia: teacher.materia,
+      sommaValutazioni: teacher.sommaValutazioni,
+      numeroValutazioni: teacher.numeroValutazioni
+    }));
+
+    res.send(response);
+  } catch (err) {
+    res.status(500).send(`Errore esecuzione query: ${err}`);
+  } finally {
+    await client.close();
+  }
+});
+
 app.get('/api/getRichieste', async (req: Request, res: Response) => {
   let collectionName = "teacherRequests"
 

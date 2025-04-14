@@ -43,6 +43,7 @@ $(document).ready(function () {
         }
         else {
             comboSpecializzazione.prop("disabled", true)
+            comboMaterie.prop("disabled", true)
         }
     })
 
@@ -148,7 +149,7 @@ $(document).ready(function () {
 
     async function getMaterie(indirizzo, anno) {
         comboMaterie.empty()
-        comboMaterie.append($("<option>").text("Materie *"))
+        comboMaterie.append($("<option>").text("Materia *"))
         if (indirizzo && anno) {
             const request = await inviaRichiesta("GET", "/api/getMaterie", { indirizzo, anno })
             if (request) {
