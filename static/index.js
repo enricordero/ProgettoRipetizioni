@@ -14,6 +14,70 @@ window.onload = function () {
         getMateriePerIndirizzo(indirizzo, sigla)
     })
 
+    $("#report-feedback").on("click", function () {
+        Swal.fire({
+            title: "Segnala un FeedBack",
+            background: "#5163e8",
+            color: "#fff",
+            html: `
+            <div>
+                <input type="name" name="name" id="name" placeholder="Nome" autocomplete="on">
+                <input type="text" name="email" id="email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" placeholder="Email">
+                <textarea name="message" id="message" placeholder="Lascia un messaggio..."></textarea>
+            </div>    
+                <style>
+                    input {
+                        width: 100%;
+                        height: 50px;
+                        border-radius: 25px;
+                        background-color: rgba(249, 235, 255, 0.15);
+                        border: none;
+                        outline: none;
+                        font-weight: 300;
+                        padding: 0px 20px;
+                        font-size: 14px;
+                        color: #fff;
+                        margin-bottom: 30px;
+                        position: relative;
+                        z-index: 3;
+                    }
+
+                    input::placeholder {
+                        color: #fff;
+                    }
+
+                    textarea {
+                        width: 100%;
+                        height: 120px;
+                        border-radius: 25px;
+                        background-color: rgba(249, 235, 255, 0.15);
+                        border: none;
+                        outline: none;
+                        font-weight: 300;
+                        padding: 20px;
+                        font-size: 14px;
+                        color: #fff;
+                        margin-bottom: 30px;
+                        position: relative;
+                        z-index: 3;
+                    }
+
+                    textarea::placeholder {
+                        color: #fff;
+                    }
+                </style>
+            `,
+            confirmButtonText: "Invia",
+            showCancelButton: true,
+            cancelButtonText: "Annulla",
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'btn-custom-invia',
+                cancelButton: 'btn-custom-annulla'
+            }
+        })
+    })
+
     async function getIndirizzi() {
         const request = await inviaRichiesta("GET", "/api/getSpecializzazioni")
         if (request) {

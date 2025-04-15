@@ -483,7 +483,7 @@
                 </div>
                 <div class="col-lg-12">
                   <fieldset>
-                    <input type="text" name="email" id="email" pattern="[^ @]*@[^ @]*" placeholder="Email">
+                    <input type="text" name="email" id="email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" placeholder="Email">
                   </fieldset>
                 </div>
                 <div class="col-lg-12">
@@ -503,6 +503,10 @@
       </div>
     </div>
   </div>
+
+  <button class="floating-alert-button" id="report-feedback" title="Report feedback">
+    <i class="fas fa-exclamation-triangle"></i>
+  </button>
 
   <footer>
     <div class="container">
