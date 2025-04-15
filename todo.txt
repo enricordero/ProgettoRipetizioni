@@ -2,5 +2,6 @@
 - pagina profilo
 - accesso funzionante (con jwt):
     - gestire cv pdf
+    - regex mail (^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)
 - fare controlli registrazione (username, mail...)
 - pagina admin

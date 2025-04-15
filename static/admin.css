@@ -1,0 +1,122 @@
+body {
+    margin: 0;
+    font-size: .7em;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    background: #eee;
+}
+
+fieldset {
+    padding: 0 15px 10px 15px;
+}
+
+h1 {
+    font-size: 2.4em;
+    margin: 0;
+    color: #fff;
+}
+
+h2 {
+    font-size: 1.7em;
+    margin: 0;
+    color: #cc0000;
+}
+
+h3 {
+    font-size: 1.2em;
+    margin: 10px 0 0 0;
+    color: #000;
+}
+
+#header {
+    width: 96%;
+    margin: 0 0 0 0;
+    padding: 6px 2% 6px 2%;
+    font-family: "trebuchet MS", Verdana, sans-serif;
+    color: #fff;
+    background-color: #555;
+}
+
+#content {
+    margin: 0 0 0 2%;
+    position: relative;
+}
+
+.content-container {
+    background: #fff;
+    width: 96%;
+    margin-top: 8px;
+    padding: 10px;
+    position: relative;
+}
+
+.card-professore {
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px auto;
+    width: 320px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+    transition: transform 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.card-professore h2 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 20px;
+}
+
+.card-professore p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.btn-link {
+    text-decoration: none;
+    color: #2980b9;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 10px;
+    transition: color 0.2s ease;
+}
+
+.btn-link:hover {
+    color: #1f5f87;
+}
+
+.button-group {
+    display: flex;
+    margin-top: 10px;
+}
+
+.button-group button {
+    border: none;
+    border-radius: 8px;
+    margin: 10px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-accetta {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.btn-accetta:hover {
+    background-color: #27ae60;
+}
+
+.btn-rifiuta {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-rifiuta:hover {
+    background-color: #c0392b;
+}

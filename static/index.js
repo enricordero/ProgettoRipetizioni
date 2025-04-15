@@ -72,7 +72,7 @@ window.onload = function () {
         if (request) {
             let professori = request.data;
             professori.forEach(professore => {
-                let div1 = $("<div>").addClass("col-lg-3 col-md-6").appendTo(".professori")
+                let div1 = $("<div>").prop("title", "Vedi il profilo").addClass("col-lg-3 col-md-6").appendTo(".professori")
                 let div2 = $("<div>").addClass("team-member").appendTo(div1)
                 let div3 = $("<div>").addClass("main-content").appendTo(div2)
                 $("<img>").prop({ "src": "assets/images/defaultPfp.jpg", "alt": "" }).appendTo(div3)

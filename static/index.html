@@ -50,11 +50,12 @@
 
             <!-- ***** Menu Start ***** -->
             <ul class="nav">
-              <li class="scroll-to-section"><a href="#services">Chi siamo</a></li>
-              <li class="scroll-to-section"><a href="#courses">Indirizzi</a></li>
-              <li class="scroll-to-section"><a href="#team">Professori</a></li>
-              <li class="scroll-to-section"><a href="#contact">Commenti</a></li>
-              <li class="scroll-to-section"><a href="login.html"><b>Accedi</b></a></li>
+              <li><a href="#services">Chi siamo</a></li>
+              <li><a href="#courses">Indirizzi</a></li>
+              <li><a href="#team">Professori</a></li>
+              <li><a href="#testimonials">Recensioni</a></li>
+              <li><a href="#events">Eventi</a></li>
+              <li><a href="login.html"><b>Accedi</b></a></li>
             </ul>
             <a class='menu-trigger'>
               <span>Menu</span>
@@ -305,46 +306,44 @@
     </div>
   </div>
 
-  <div class="section testimonials">
+  <div class="section testimonials" id="testimonials">
     <div class="container">
       <div class="row">
         <div class="col-lg-7">
           <div class="owl-carousel owl-testimonials">
             <div class="item">
-              <p>“Please tell your friends or collegues about TemplateMo website. Anyone can access the website to
-                download free templates. Thank you for visiting.”</p>
+              <p>“Please tell your friends or collegues about {{nomesito}}. Thank you for visiting.”</p>
               <div class="author">
-                <img src="assets/images/testimonial-author.jpg" alt="">
-                <span class="category">Full Stack Master</span>
-                <h4>Claude David</h4>
+                <img src="assets/images/defaultPfp.jpg" alt="">
+                <span class="category">io</span>
+                <h4>Nome Cognome</h4>
               </div>
             </div>
             <div class="item">
               <p>“Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
                 dolore magna aliqua. Quis ipsum suspendisse ultrices gravid.”</p>
               <div class="author">
-                <img src="assets/images/testimonial-author.jpg" alt="">
-                <span class="category">UI Expert</span>
-                <h4>Thomas Jefferson</h4>
+                <img src="assets/images/defaultPfp.jpg" alt="">
+                <span class="category">studente</span>
+                <h4>Nome Cognome</h4>
               </div>
             </div>
             <div class="item">
-              <p>“Scholar is free website template provided by TemplateMo for educational related websites. This CSS
-                layout is based on Bootstrap v5.3.0 framework.”</p>
+              <p>“Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                dolore magna aliqua. Quis ipsum suspendisse ultrices gravid.”</p>
               <div class="author">
-                <img src="assets/images/testimonial-author.jpg" alt="">
-                <span class="category">Digital Animator</span>
-                <h4>Stella Blair</h4>
+                <img src="assets/images/defaultPfp.jpg" alt="">
+                <span class="category">professore</span>
+                <h4>Nome Cognome</h4>
               </div>
             </div>
           </div>
         </div>
         <div class="col-lg-5 align-self-center">
           <div class="section-heading">
-            <h6>TESTIMONIALS</h6>
-            <h2>What they say about us?</h2>
-            <p>You can search free CSS templates on Google using different keywords such as templatemo portfolio,
-              templatemo gallery, templatemo blue color, etc.</p>
+            <h6>Recensioni</h6>
+            <h2>Cosa ne pensano di noi?</h2>
+            <p>Qui a fianco puoi vedere alcune delle recensioni più recenti. Se ti interessa vedere di più puoi vederle <a href="#">qui</a>!</p>
           </div>
         </div>
       </div>
@@ -357,9 +356,10 @@
         <div class="col-lg-12 text-center">
           <div class="section-heading">
             <h6>Schedule</h6>
-            <h2>Upcoming Events</h2>
+            <h2>Eventi</h2>
           </div>
         </div>
+        <!--
         <div class="col-lg-12 col-md-6">
           <div class="item">
             <div class="row">
@@ -456,6 +456,8 @@
             </div>
           </div>
         </div>
+        -->
+        <div>Non ci sono eventi in corso al momento</div>
       </div>
     </div>
   </div>
@@ -465,41 +467,33 @@
       <div class="row">
         <div class="col-lg-6  align-self-center">
           <div class="section-heading">
-            <h6>Contact Us</h6>
-            <h2>Feel free to contact us anytime</h2>
-            <p>Thank you for choosing our templates. We provide you best CSS templates at absolutely 100% free of
-              charge. You may support us by sharing our website to your friends.</p>
-            <div class="special-offer">
-              <span class="offer">off<br><em>50%</em></span>
-              <h6>Valide: <em>24 April 2036</em></h6>
-              <h4>Special Offer <em>50%</em> OFF!</h4>
-              <a href="#"><i class="fa fa-angle-right"></i></a>
-            </div>
+            <h6>Contatti</h6>
+            <h2>Sentiti libero di contattarci quando vuoi</h2>
+            <p>Grazie</p>
           </div>
         </div>
         <div class="col-lg-6">
           <div class="contact-us-content">
-            <form id="contact-form" action="" method="post">
+            <form id="contact-form">
               <div class="row">
                 <div class="col-lg-12">
                   <fieldset>
-                    <input type="name" name="name" id="name" placeholder="Your Name..." autocomplete="on" required>
+                    <input type="name" name="name" id="name" placeholder="Nome" autocomplete="on">
                   </fieldset>
                 </div>
                 <div class="col-lg-12">
                   <fieldset>
-                    <input type="text" name="email" id="email" pattern="[^ @]*@[^ @]*" placeholder="Your E-mail..."
-                      required="">
+                    <input type="text" name="email" id="email" pattern="[^ @]*@[^ @]*" placeholder="Email">
                   </fieldset>
                 </div>
                 <div class="col-lg-12">
                   <fieldset>
-                    <textarea name="message" id="message" placeholder="Your Message"></textarea>
+                    <textarea name="message" id="message" placeholder="Lascia un messaggio..."></textarea>
                   </fieldset>
                 </div>
                 <div class="col-lg-12">
-                  <fieldset>
-                    <button type="submit" id="form-submit" class="orange-button">Send Message Now</button>
+                  <fieldset style="text-align: center;">
+                    <button id="form-submit" class="orange-button">Invia</button>
                   </fieldset>
                 </div>
               </div>
