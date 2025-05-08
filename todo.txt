@@ -5,3 +5,4 @@
     - regex mail (^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)
 - fare controlli registrazione (username, mail...)
 - pagina admin
+- registrazione prof presenza/casa e più di una materia

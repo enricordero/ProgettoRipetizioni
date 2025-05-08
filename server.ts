@@ -130,7 +130,7 @@ app.get('/api/getMaterie', async (req: Request, res: Response) => {
   });
   request.then((data) => {
     for (const item in data[0]["indirizzi"]) {
-      if(item == indirizzo)
+      if (item == indirizzo)
         materie.push(data[0]["indirizzi"][item][anno])
     }
     res.send(materie);
@@ -155,7 +155,7 @@ app.get('/api/getMateriePerIndirizzo', async (req: Request, res: Response) => {
   });
   request.then((data) => {
     for (const item in data[0]["indirizzi"]) {
-      if(item == indirizzo)
+      if (item == indirizzo)
         materie.push(data[0]["indirizzi"][item])
     }
     res.send(materie);
@@ -166,48 +166,50 @@ app.get('/api/getMateriePerIndirizzo', async (req: Request, res: Response) => {
 });
 
 app.get('/api/getBestProfessors', async (req: Request, res: Response) => {
-  const collectionName = "users";
+  const collectionName = "teachers";
   const client = new MongoClient(connectionString);
-
   try {
     await client.connect();
     const collection = client.db(dbName).collection(collectionName);
-
     const data = await collection.find().toArray();
-
-    // Raccogliamo tutti i teachers in un unico array
-    let allTeachers: any[] = [];
-    data.forEach(user => {
-      if (Array.isArray(user.teachers)) {
-        allTeachers = allTeachers.concat(user.teachers);
-      }
-    });
-
-    // Calcolo media voti ed eliminazione dei non validi
-    const teachersWithMedia = allTeachers
-      .filter(t => typeof t.sommaValutazioni === 'number' && typeof t.numeroValutazioni === 'number' && t.numeroValutazioni > 0)
-      .map(t => ({
-        ...t,
-        mediaVoti: t.sommaValutazioni / t.numeroValutazioni
-      }));
-
-    // Ordina per media voti decrescente e prendi i migliori 4
-    const topTeachers = teachersWithMedia
-      .sort((a, b) => b.mediaVoti - a.mediaVoti)
+    const result = data
+      .map(prof => ({
+        ...prof,
+        mediaValutazioni: prof.numeroValutazioni > 0
+          ? prof.sommaValutazioni / prof.numeroValutazioni
+          : 0
+      }))
+      .sort((a, b) => b.mediaValutazioni - a.mediaValutazioni)
       .slice(0, 4);
+    res.send(result);
+  } catch (err) {
+    res.status(500).send(`Errore esecuzione query: ${err}`);
+  } finally {
+    await client.close();
+  }
+});
 
-    // Costruzione della risposta
-    const response = topTeachers.map(teacher => ({
-      nome: teacher.nome,
-      cognome: teacher.cognome,
-      citta: teacher.citta,
-      email: teacher.email,
-      materia: teacher.materia,
-      sommaValutazioni: teacher.sommaValutazioni,
-      numeroValutazioni: teacher.numeroValutazioni
-    }));
-
-    res.send(response);
+app.get('/api/getProfessoriPerMateria', async (req: Request, res: Response) => {
+  const collectionName = "teachers";
+  const materiaQuery = (req.query.materia as string || "").trim().toLowerCase().replace(/\s+/g, '');
+  const client = new MongoClient(connectionString);
+  try {
+    await client.connect();
+    const collection = client.db(dbName).collection(collectionName);
+    const data = await collection.find().toArray();
+    const filtered = data
+      .filter(prof => {
+        const materie = prof.materia
+          .split(',')
+          .map((m: string) => m.trim().toLowerCase().replace(/\s+/g, ''));
+        return materie.includes(materiaQuery);
+      })
+      .map(({ password, ...rest }) => rest)
+      .sort((a, b) =>
+        b.sommaValutazioni / b.numeroValutazioni -
+        a.sommaValutazioni / a.numeroValutazioni
+      );
+    res.send(filtered);
   } catch (err) {
     res.status(500).send(`Errore esecuzione query: ${err}`);
   } finally {
