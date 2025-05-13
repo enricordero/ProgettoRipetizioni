@@ -4,7 +4,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
 import dotenv from 'dotenv';
 import cors, { CorsOptions } from 'cors';
-import multer from 'multer';
+import nodeMailer from 'nodemailer';
 
 /* ********************** HTTP server ********************** */
 dotenv.config({ path: ".env" });
@@ -267,6 +267,31 @@ app.post('/api/creaRichiestaProfessore', async (req: Request, res: Response) => 
   } finally {
     await client.close();
   }
+});
+
+const auth = {
+  "user" : process.env.gmailUser,
+}
+
+app.post('/api/newMail', (req: any, res: any) => {
+  const mail = req.body.mail;
+  const transporter = nodeMailer.createTransport({
+    service: 'gmail',
+    auth: auth
+  });
+  const mailOptions = {
+    from: auth.user,
+    to: mail.to,
+    subject: mail.subject,
+    html: mail.message,
+  };
+  transporter.sendMail(mailOptions, (err, data) => {
+    if (err) {
+      res.status(500).send('Errore invio mail: ' + err.message);
+    } else {
+      res.send({ ris: 'OK' });
+    }
+  });
 });
 /* ********************** Default Route & Error Handler ********************** */
 app.use('/', (req: Request, res: Response) => {
