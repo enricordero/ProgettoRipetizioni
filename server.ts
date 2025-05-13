@@ -115,30 +115,37 @@ app.get('/api/getSpecializzazioni', async (req: Request, res: Response) => {
 });
 
 app.get('/api/getMaterie', async (req: Request, res: Response) => {
-  let collectionName = "subjects"
-  let indirizzo: string = req.query.indirizzo as string
-  let anno: string = req.query.anno as string;
-  let materie: any = []
+  const collectionName = "subjects";
 
   const client = new MongoClient(connectionString);
   await client.connect();
   const collection = client.db(dbName).collection(collectionName);
 
-  const request = collection.find().toArray();
-  request.catch((err) => {
+  try {
+    const data = await collection.find().toArray();
+
+    const uniqueMaterie = new Set<string>();
+
+    data.forEach((doc) => {
+      if (doc.indirizzi) {
+        Object.values(doc.indirizzi).forEach((indirizzo: any) => {
+          Object.values(indirizzo).forEach((annoMaterie: any) => {
+            if (Array.isArray(annoMaterie)) {
+              annoMaterie.forEach((materia: string) => uniqueMaterie.add(materia));
+            }
+          });
+        });
+      }
+    });
+
+    res.send(Array.from(uniqueMaterie).sort()); // Ordina opzionalmente
+  } catch (err) {
     res.status(500).send(`Errore esecuzione query: ${err}`);
-  });
-  request.then((data) => {
-    for (const item in data[0]["indirizzi"]) {
-      if (item == indirizzo)
-        materie.push(data[0]["indirizzi"][item][anno])
-    }
-    res.send(materie);
-  });
-  request.finally(() => {
-    client.close();
-  });
+  } finally {
+    await client.close();
+  }
 });
+
 
 app.get('/api/getMateriePerIndirizzo', async (req: Request, res: Response) => {
   let collectionName = "subjects"

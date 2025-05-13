@@ -9,7 +9,12 @@ $(document).ready(function () {
     const registerSectionStudent = $("#register-section-student").hide()
     const btnAccedi = $("#btnLogin")
     const btnRegisterTeacher = $("#btnRegisterTeacher")
-    const txtMaterie = $("#materia")
+    const btnInfoMaterie = $("#infoMaterieBtn")
+
+    btnInfoMaterie.on("click", function () {
+        getMaterie()
+    })
+
 
     aLogin.on("click", function () {
         loginSection.show()
@@ -145,5 +150,51 @@ $(document).ready(function () {
             // Avvia la lettura del file come DataURL
             reader.readAsDataURL(file);
         });
+    }
+
+    async function getMaterie() {
+        const request = await inviaRichiesta("GET", "/api/getMaterie")
+        if (request.status == 200) {
+            Swal.fire({
+                title: 'Materie',
+                html: `<div id="divMaterie"><p>Le materie disponibili sono le seguenti:</p></div><br><br>`,
+                icon: "info",
+                customClass: {
+                    popup: 'swal-materie-popup',     // La classe personalizzata per il pop-up
+                    title: 'swal-materie-title',     // La classe per il titolo
+                    htmlContainer: 'swal-materie-html'  // La classe per il contenitore dell'HTML
+                },
+                didOpen: () => {
+                    // Creiamo una lista <ul> e applichiamo gli stili
+                    const ul = $("<ul>").appendTo("#divMaterie").css({
+                        'display': 'flex',           // Usa flexbox per gestire il layout delle colonne
+                        'flex-wrap': 'wrap',         // Permette di andare a capo con le materie
+                        'list-style-type': 'none',   // Rimuoviamo i pallini predefiniti
+                        'padding': '0',              // Rimuoviamo il padding di default
+                        'margin': '0',               // Rimuoviamo il margine predefinito
+                        'gap': '15px',               // Spazio tra gli elementi
+                    });
+
+                    // Aggiungiamo ogni materia nella lista
+                    request.data.forEach(materia => {
+                        $("<li>").text(materia)
+                            .css({
+                                'font-size': '16px',                // Impostiamo la dimensione del testo
+                                'color': '#333',                    // Colore del testo
+                                'margin-bottom': '8px',             // Distanza tra gli elementi
+                                'font-family': '"Segoe UI", sans-serif', // Font più moderno
+                                'position': 'relative',             // Per posizionare un'icona
+                                'padding': '15px',             // Distanza tra il testo e l'icona
+                                'width': '15%',                     // Impostiamo la larghezza di ogni item (30% per 3 colonne)
+                                'box-sizing': 'border-box',         // Assicura che il padding non influisca sulla larghezza totale,
+                                'border': '1px solid #ddd',          // Aggiungiamo un bordo per separare l
+                                'border-radius': '10px',             // Aggiungiamo un bordo arrotondato per render
+                            })
+                            .prepend('<i class="fa fa-check-circle" style="position:absolute; left:0; top:0; color:#4caf50; font-size:18px;"></i>') // Icona accanto al testo
+                            .appendTo(ul);
+                    });
+                }
+            });
+        }
     }
 })

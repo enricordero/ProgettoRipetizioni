@@ -84,3 +84,51 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+.materia-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.materia-wrapper input[type="text"].materia {
+    width: 90%;
+    flex-grow: 1;
+}
+
+.info-materie-btn {
+    width: 11%;
+    min-width: 30px;
+    height: 46px;
+    padding: 0;
+    font-size: 18px;
+    background-color: transparent;
+    color: #888;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* Modifica la larghezza del pop-up */
+.swal2-popup {
+  width: 80% !important;   /* 80% della larghezza della finestra */
+}
+
+.swal2-title {
+  text-align: center;      /* Centra il titolo */
+}
+
+.swal2-html-container {
+  font-size: 16px;         /* Impostiamo la dimensione del testo */
+  color: #333;             /* Colore del testo */
+}
+
+.swal-materie-popup {
+  width: 80% !important;   /* Allargamento del pop-up */
+}
+
+.swal-materie-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #007BFF; /* Colore personalizzato per il titolo */
+}
