@@ -236,6 +236,31 @@ app.get('/api/getRichieste', async (req: Request, res: Response) => {
   });
 });
 
+app.post('/api/creaRichiestaProfessore', async (req: Request, res: Response) => {
+  const collectionName = "teacherRequests";
+  const account = req.body.account;
+
+  if (!account || typeof account !== "object") {
+    res.status(400).send("Dati account non validi");
+  }
+
+  const client = new MongoClient(connectionString);
+  try {
+    await client.connect();
+    const collection = client.db(dbName).collection(collectionName);
+
+    const result = await collection.insertOne(account);
+    res.status(201).send({
+      message: "Account registrato con successo",
+      insertedId: result.insertedId
+    });
+  } catch (err) {
+    console.error("Errore inserimento account:", err);
+    res.status(500).send(`Errore inserimento account: ${err}`);
+  } finally {
+    await client.close();
+  }
+});
 /* ********************** Default Route & Error Handler ********************** */
 app.use('/', (req: Request, res: Response) => {
   res.status(404);

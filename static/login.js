@@ -9,11 +9,7 @@ $(document).ready(function () {
     const registerSectionStudent = $("#register-section-student").hide()
     const btnAccedi = $("#btnLogin")
     const btnRegisterTeacher = $("#btnRegisterTeacher")
-    const comboAnno = $("#anno")
-    const comboSpecializzazione = $("#specializzazione")
-    const comboMaterie = $("#materia")
-    comboSpecializzazione.prop("disabled", true)
-    comboMaterie.prop("disabled", true)
+    const txtMaterie = $("#materia")
 
     aLogin.on("click", function () {
         loginSection.show()
@@ -25,43 +21,12 @@ $(document).ready(function () {
         loginSection.hide()
         registerSectionTeacher.show()
         registerSectionStudent.hide()
-        getSpecializzazioni()
     })
 
     aRegisterStudent.on("click", function () {
         loginSection.hide()
         registerSectionTeacher.hide()
         registerSectionStudent.show()
-    })
-
-    comboAnno.on("change", function () {
-        comboSpecializzazione.prop("selectedIndex", 0)
-        comboMaterie.prop("selectedIndex", 0)
-        const anno = $(this).val()
-        if (anno != "placeholder") {
-            comboSpecializzazione.prop("disabled", false)
-        }
-        else {
-            comboSpecializzazione.prop("disabled", true)
-            comboMaterie.prop("disabled", true)
-        }
-    })
-
-    comboSpecializzazione.on("change", function () {
-        const indirizzo = $(this).val();
-        console.log(indirizzo, comboAnno.val())
-        if (indirizzo != "placeholder") {
-            comboMaterie.prop("disabled", false)
-            if (comboAnno.val() != "placeholder")
-                getMaterie(indirizzo, comboAnno.val())
-        }
-        else {
-            comboMaterie.prop("disabled", true)
-        }
-    })
-
-    comboMaterie.on("change", function () {
-        const selectedValue = $(this).val();
     })
 
     $("#cv-upload").on("change", function () {
@@ -74,9 +39,9 @@ $(document).ready(function () {
                 icon: "error"
             });
             $(".file-label").text("Inserisci il tuo CV *")
-            .css("color", "#687aff")
+                .css("color", "#687aff")
             this.value = "";
-        } else if(file && file.type == "application/pdf"){
+        } else if (file && file.type == "application/pdf") {
             $(".file-label").text("PDF caricato correttamente: " + file.name)
                 .css({
                     "color": "green",
@@ -112,52 +77,73 @@ $(document).ready(function () {
         }
     });
 
-    btnRegisterTeacher.on("click", function () {
-        const username = $("#username-teacher").val();
-        const password = $("#password-teacher").val();
-        const email = $("#email-teacher").val();
-        const anno = comboAnno.val();
-        const indirizzo = comboSpecializzazione.val();
-        const materia = comboMaterie.val();
-        const nTelefono = $(".telefono").val();
-        const input = document.getElementById('cv-upload');
-        const file = input.files[0];
-        if (file) {
-            console.log('✅ File caricato:', file.name);
-            console.log('📦 Tipo:', file.type);
-            console.log('📏 Dimensione:', file.size, 'byte');
-        } else {
-            console.log('❌ Nessun file selezionato.');
+    document.getElementById("btnRegisterTeacher").addEventListener("click", async function () {
+        const nome = document.getElementById("name-teacher").value;
+        const cognome = document.getElementById("cognome-teacher").value;
+        const email = document.getElementById("email-teacher").value;
+        const citta = document.getElementById("residenza").value;
+        const materia = document.getElementById("materia").value;
+
+        const fotoFile = document.getElementById("imageInput").files[0];
+        const cvFile = document.getElementById("cv-upload").files[0];
+
+        if (!nome || !cognome || !email || !citta || !materia || !cvFile) {
+            alert("Per favore, compila tutti i campi obbligatori.");
+            return;
         }
 
-    })
+        try {
+            const fotoProfiloBase64 = fotoFile ? await fileToBase64(fotoFile) : null;
+            const cvBase64 = cvFile ? await fileToBase64(cvFile) : null;
 
-    async function getSpecializzazioni() {
-        const request = await inviaRichiesta("GET", "/api/getSpecializzazioni")
-        if (request) {
-            console.log(request.data[0]["indirizzi"])
-            for (const indirizzo in request.data[0]["indirizzi"]) {
-                $("<option>")
-                    .appendTo(comboSpecializzazione)
-                    .prop({
-                        "text": indirizzo,
-                        "value": indirizzo
-                    })
+            const account = {
+                nome,
+                cognome,
+                email,
+                citta,
+                materia,
+                cvBase64,
+                fotoProfiloBase64
+            };
+
+            console.log(account);
+
+            const request = await inviaRichiesta("POST", "/api/creaRichiestaProfessore", { account });
+            if (request.data) {
+                console.log("Account creato:", account);
+            } else {
+                alert("Errore durante la registrazione.");
             }
+        } catch (error) {
+            console.error("Errore nella creazione dell'account:", error);
+            alert("Errore durante la lettura dei file.");
         }
-    }
+    });
 
-    async function getMaterie(indirizzo, anno) {
-        comboMaterie.empty()
-        comboMaterie.append($("<option>").text("Materia *"))
-        if (indirizzo && anno) {
-            const request = await inviaRichiesta("GET", "/api/getMaterie", { indirizzo, anno })
-            if (request) {
-                request.data[0].forEach(materia => {
-                    console.log(materia)
-                    $("<option>").text(materia).val(materia).appendTo(comboMaterie)
-                });
+    // Funzione per convertire il file in una stringa base64 senza il prefisso MIME
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            // Se il file è un'immagine
+            if (file.type.startsWith("image")) {
+                reader.onload = () => {
+                    const base64String = reader.result.split(',')[1]; // Rimuove il prefisso "data:image/*;base64,"
+                    resolve(base64String);
+                };
             }
-        }
+            // Se il file è un PDF o altro documento
+            else if (file.type === "application/pdf") {
+                reader.onload = () => {
+                    const base64String = reader.result.split(',')[1]; // Rimuove il prefisso "data:application/pdf;base64,"
+                    resolve(base64String);
+                };
+            }
+
+            reader.onerror = (error) => reject(error);
+
+            // Avvia la lettura del file come DataURL
+            reader.readAsDataURL(file);
+        });
     }
 })
