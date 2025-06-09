@@ -32,6 +32,7 @@
             <a href="#" id="register-student">Registrati come studente</a> <br>
             <a href="#" id="register-teacher">Registrati come professore</a> <br>
         </span>
+
     </section>
 
     <section id="register-section-teacher">
@@ -41,21 +42,44 @@
             <input type="text" class="name" id="name-teacher" name="name" placeholder="Nome *"><br><br>
             <input type="text" class="cognome" id="cognome-teacher" name="cognome" placeholder="Cognome *"><br><br>
             <input type="email" class="email" id="email-teacher" name="email" placeholder="Email *"><br><br>
-            <input type="text" class="residenza" id="residenza" name="residenza"
-                placeholder="Luogo di residenza *"><br><br>
+            <input type="text" class="residenza" id="residenza" name="residenza" placeholder="Luogo di residenza *"><br>
+            <div class="disponibilita-lezioni">
+                <span>Disponibilità lezioni* </span><br>
+                <input type="checkbox" id="presenza"><label for="presenza">Presenza</label>
+                <br>
+                <input type="checkbox" id="online"><label for="online">Online</label>
+                <br>
+                <input type="checkbox" id="difficolta"><label for="difficolta">Ragazzi con difficoltà</label>
+                <br>
+                <i id="hint">è possibile selezionare più di una modalità</i>
+            </div>
+            <br>
             <div class="materia-wrapper">
                 <input type="text" class="materia" id="materia" name="materia"
                     placeholder="Materie (separale con una virgola) *">
                 <button type="button" id="infoMaterieBtn" class="info-materie-btn">?</button>
             </div>
-            <br><br>
-            <label for="pfp" class="pfp-label">Foto profilo (opzionale)</label>
-            <input type="file" class="pfp" name="pfp" accept="image/*" id="imageInput"><br><br>
-            <img id="preview" src="" alt="Anteprima immagine"
-                style="max-width: 300px; display: none; border: 1px solid #ccc; padding: 10px; margin: 0 auto;" />
-            <script>
+            <br>
+            <div class="telefono-wrapper">
+                <select id="prefix">
+                    <option value="+1">🇨🇦 +1</option>
+                    <option value="+33">🇫🇷 +33</option>
+                    <option value="+49">🇩🇪 +49</option>
+                    <option value="+39" selected>🇮🇹 +39</option>
+                    <option value="+48">🇵🇱 +48</option>
+                    <option value="+351">🇵🇹 +351</option>
+                    <option value="+40">🇷🇴 +40</option>
+                    <option value="+421">🇸🇰 +421</option>
+                    <option value="+34">🇪🇸 +34</option>
+                    <option value="+41">🇨🇭 +41</option>
+                    <option value="+44">🇬🇧 +44</option>
+                    <option value="+380">🇺🇦 +380</option>
+                    <option value="+1">🇺🇸 +1</option>
+                </select>
 
-            </script>
+                <input type="tel" class="phone" id="phone-teacher" name="phone" placeholder="Numero di telefono *">
+            </div>
+            <br><br>
             <label for="cv-upload" class="file-label">Inserisci il tuo CV *</label>
             <input type="file" class="file-input" id="cv-upload" name="file" accept="application/pdf"
                 style="display: none;"><br><br>

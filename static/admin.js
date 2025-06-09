@@ -9,22 +9,19 @@ $(document).ready(function () {
             request.data.forEach(richiestaProfessore => {
                 const card = $("<div>").addClass("card-professore")
                 card.append($("<h2>").text(`${richiestaProfessore.nome} ${richiestaProfessore.cognome}`))
-                card.append($("<img>").prop("src", `data:image/png;base64,${richiestaProfessore.fotoProfiloBase64}`).css({ "width": "180px", "margin": "0 auto" }))
                 card.append($("<p>").text(`📧 Email: ${richiestaProfessore.email}`))
                 card.append($("<p>").text(`📘 Materia: ${richiestaProfessore.materia}`))
                 card.append($("<p>").text(`📍 Città: ${richiestaProfessore.citta}`))
+                card.append($("<p>").text(`🕒 Disponibilità: ${richiestaProfessore.scelte.join(", ")}`))
                 card.append(
                     $("<a>")
                         .text("📄 Vedi curriculum")
                         .addClass("btn-link")
-                        .prop(
-                            {
-                                "href": "#",
-                                "target": "_blank"
-                            }
-                        )
                         .on("click", function () {
                             apriPdf(richiestaProfessore.cvBase64)
+                        })
+                        .on("mouseover", function () {
+                            $(this).css("cursor", "pointer");
                         })
                 );
 
@@ -51,11 +48,19 @@ $(document).ready(function () {
                         if (result.isConfirmed) {
                             Swal.fire({
                                 title: 'Richiesta accettata',
-                                text: 'La richiesta è stata accettata con successo, mandare password generata casualmente via mail oppure al primo accesso cambiarla',
+                                text: 'Richiesta accettata con successo, password generata casualmente mandata via whatsapp',
                                 icon: 'success',
                             })
+
+                            let password = generaPasswordCasuale()
+
+                            const numero = richiestaProfessore.telefono;
+                            const messaggio = encodeURIComponent(
+                                `Gentile utente,\nla informiamo che la sua richiesta di registrazione alla piattaforma SkillUp è stata approvata e il suo account è stato creato con successo.\n\nDi seguito le credenziali per effettuare l'accesso:\n*Email*: ${richiestaProfessore.email}\n*Password*: ${password}\n_(la password è stata generata casualmente)_`
+                            );
+                            window.open(`https://wa.me/${numero}?text=${messaggio}`, '_blank');
                         }
-                        else{
+                        else {
                             Swal.fire({
                                 title: 'Operazione annullata',
                                 icon: 'info'
@@ -95,19 +100,13 @@ $(document).ready(function () {
                                 icon: 'info'
                             });
 
-                            let mail = {
-                                to: richiestaProfessore.email,
-                                subject: "Richiesta di iscrizione rifiutata",
-                                message: `Ciao ${richiestaProfessore.nome} ${richiestaProfessore.cognome}, la tua richiesta di registrazione alla piattaforma
-                                         è stata rifiutata. Motivo: ${motivazione}
-                                         `,
-                            }
+                            const numero = richiestaProfessore.telefono;
+                            const messaggio = encodeURIComponent(
+                                `Gentile utente,\nla informiamo che la sua richiesta di registrazione alla piattaforma SkillUp è stata rifiutata.\n\n*Motivazione*: ${motivazione}`
+                            );
+                            window.open(`https://wa.me/${numero}?text=${messaggio}`, '_blank');
 
-                            /*let response = await inviaRichiesta('POST', '/api/newMail', mail);
-                            if (response.status == 200) {
-                                console.log(response.data);
-                                alert('Mail inviata correttamente');
-                            } else alert(response.status + ' : ' + response.err);*/
+
                         } else {
                             Swal.fire({
                                 title: 'Operazione annullata',
@@ -122,5 +121,15 @@ $(document).ready(function () {
                 $("#contenitore-professori").append(card)
             });
         }
+    }
+
+    function generaPasswordCasuale() {
+        const caratteri = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let password = '';
+        for (let i = 0; i < 16; i++) {
+            const indiceCasuale = Math.floor(Math.random() * caratteri.length);
+            password += caratteri.charAt(indiceCasuale);
+        }
+        return password;
     }
 })

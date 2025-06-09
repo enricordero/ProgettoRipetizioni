@@ -8,7 +8,6 @@ $(document).ready(function () {
     const registerSectionTeacher = $("#register-section-teacher").hide()
     const registerSectionStudent = $("#register-section-student").hide()
     const btnAccedi = $("#btnLogin")
-    const btnRegisterTeacher = $("#btnRegisterTeacher")
     const btnInfoMaterie = $("#infoMaterieBtn")
 
     btnInfoMaterie.on("click", function () {
@@ -55,41 +54,31 @@ $(document).ready(function () {
         }
     })
 
-    const input = document.getElementById('imageInput');
-    const preview = document.getElementById('preview');
+    document.getElementById("btnRegisterTeacher").addEventListener("click", async function (e) {
+        const presenza = document.getElementById("presenza").checked;
+        const online = document.getElementById("online").checked;
+        const difficolta = document.getElementById("difficolta").checked;
 
-    input.addEventListener('change', function () {
-        const file = this.files[0];
-
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-
-            reader.onload = function (e) {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-            };
-
-            reader.readAsDataURL(file);
+        let scelte = [];
+        if (!presenza && !online) {
+            e.preventDefault();
+            alert("Seleziona almeno una disponibilità");
         } else {
-            preview.style.display = 'none';
-            this.value = ''; // reset input
-            Swal.fire({
-                title: "Errore",
-                text: "Il formato dell'immagine non è valido!",
-                footer: "Formati consentiti: .png, .jpg, .jpeg, .gif, .webp e .bmp",
-                icon: "error"
-            });
-        }
-    });
+            if (presenza) scelte.push("Presenza");
+            if (online) scelte.push("Online");
+            if (difficolta) scelte.push("Difficolta");
 
-    document.getElementById("btnRegisterTeacher").addEventListener("click", async function () {
+            console.log(scelte.join(", "));
+        }
+
         const nome = document.getElementById("name-teacher").value;
         const cognome = document.getElementById("cognome-teacher").value;
         const email = document.getElementById("email-teacher").value;
         const citta = document.getElementById("residenza").value;
         const materia = document.getElementById("materia").value;
-
-        const fotoFile = document.getElementById("imageInput").files[0];
+        const prefix = document.getElementById("prefix").value;
+        const phoneNumber = document.getElementById("phone-teacher").value;
+        const fullPhone = prefix + phoneNumber.replace(/\s+/g, '');
         const cvFile = document.getElementById("cv-upload").files[0];
 
         if (!nome || !cognome || !email || !citta || !materia || !cvFile) {
@@ -98,17 +87,17 @@ $(document).ready(function () {
         }
 
         try {
-            const fotoProfiloBase64 = fotoFile ? await fileToBase64(fotoFile) : null;
             const cvBase64 = cvFile ? await fileToBase64(cvFile) : null;
 
             const account = {
                 nome,
                 cognome,
                 email,
-                citta,
                 materia,
-                cvBase64,
-                fotoProfiloBase64
+                citta,
+                scelte,
+                "telefono": fullPhone,
+                cvBase64
             };
 
             console.log(account);
@@ -160,37 +149,35 @@ $(document).ready(function () {
                 html: `<div id="divMaterie"><p>Le materie disponibili sono le seguenti:</p></div><br><br>`,
                 icon: "info",
                 customClass: {
-                    popup: 'swal-materie-popup',     // La classe personalizzata per il pop-up
-                    title: 'swal-materie-title',     // La classe per il titolo
-                    htmlContainer: 'swal-materie-html'  // La classe per il contenitore dell'HTML
+                    popup: 'swal-materie-popup',
+                    title: 'swal-materie-title',
+                    htmlContainer: 'swal-materie-html'
                 },
                 didOpen: () => {
-                    // Creiamo una lista <ul> e applichiamo gli stili
                     const ul = $("<ul>").appendTo("#divMaterie").css({
-                        'display': 'flex',           // Usa flexbox per gestire il layout delle colonne
-                        'flex-wrap': 'wrap',         // Permette di andare a capo con le materie
-                        'list-style-type': 'none',   // Rimuoviamo i pallini predefiniti
-                        'padding': '0',              // Rimuoviamo il padding di default
-                        'margin': '0',               // Rimuoviamo il margine predefinito
-                        'gap': '15px',               // Spazio tra gli elementi
+                        'display': 'flex',
+                        'flex-wrap': 'wrap',
+                        'list-style-type': 'none',
+                        'padding': '0',
+                        'margin': '0',
+                        'gap': '15px',
                     });
 
-                    // Aggiungiamo ogni materia nella lista
                     request.data.forEach(materia => {
                         $("<li>").text(materia)
                             .css({
-                                'font-size': '16px',                // Impostiamo la dimensione del testo
-                                'color': '#333',                    // Colore del testo
-                                'margin-bottom': '8px',             // Distanza tra gli elementi
-                                'font-family': '"Segoe UI", sans-serif', // Font più moderno
-                                'position': 'relative',             // Per posizionare un'icona
-                                'padding': '15px',             // Distanza tra il testo e l'icona
-                                'width': '15%',                     // Impostiamo la larghezza di ogni item (30% per 3 colonne)
-                                'box-sizing': 'border-box',         // Assicura che il padding non influisca sulla larghezza totale,
-                                'border': '1px solid #ddd',          // Aggiungiamo un bordo per separare l
-                                'border-radius': '10px',             // Aggiungiamo un bordo arrotondato per render
+                                'font-size': '16px',
+                                'color': '#333',
+                                'margin-bottom': '8px',
+                                'font-family': '"Segoe UI", sans-serif',
+                                'position': 'relative',
+                                'padding': '15px',
+                                'width': '15%',
+                                'box-sizing': 'border-box',
+                                'border': '1px solid #ddd',
+                                'border-radius': '10px',
                             })
-                            .prepend('<i class="fa fa-check-circle" style="position:absolute; left:0; top:0; color:#4caf50; font-size:18px;"></i>') // Icona accanto al testo
+                            .prepend('<i class="fa fa-check-circle" style="position:absolute; left:0; top:0; color:#4caf50; font-size:18px;"></i>')
                             .appendTo(ul);
                     });
                 }

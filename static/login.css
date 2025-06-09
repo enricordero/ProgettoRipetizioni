@@ -49,11 +49,11 @@ input[type="file"] {
     box-sizing: border-box;
 }
 
-.file-label{
+.file-label {
     color: #687aff;
 }
 
-.file-label:hover{
+.file-label:hover {
     cursor: pointer;
     text-decoration: underline;
 }
@@ -111,24 +111,91 @@ a:hover {
 
 /* Modifica la larghezza del pop-up */
 .swal2-popup {
-  width: 80% !important;   /* 80% della larghezza della finestra */
+    width: 80% !important;
+    /* 80% della larghezza della finestra */
 }
 
 .swal2-title {
-  text-align: center;      /* Centra il titolo */
+    text-align: center;
+    /* Centra il titolo */
 }
 
 .swal2-html-container {
-  font-size: 16px;         /* Impostiamo la dimensione del testo */
-  color: #333;             /* Colore del testo */
+    font-size: 16px;
+    /* Impostiamo la dimensione del testo */
+    color: #333;
+    /* Colore del testo */
 }
 
 .swal-materie-popup {
-  width: 80% !important;   /* Allargamento del pop-up */
+    width: 80% !important;
+    /* Allargamento del pop-up */
 }
 
 .swal-materie-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #007BFF; /* Colore personalizzato per il titolo */
+    font-size: 20px;
+    font-weight: bold;
+    color: #007BFF;
+    /* Colore personalizzato per il titolo */
+}
+
+/* Contenitore per disponibilità lezioni */
+.disponibilita-lezioni {
+    text-align: left;
+    margin-top: 20px;
+    font-size: 16px;
+    color: #333;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+/* Stile per le label e i checkbox */
+.disponibilita-lezioni label {
+    margin-right: 10px;
+    margin-left: 10px;
+    font-weight: 500;
+    color: #444;
+}
+
+.disponibilita-lezioni input[type="checkbox"] {
+    transform: scale(1.2);
+    accent-color: #687aff;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+#prefix {
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    box-sizing: border-box;
+}
+
+.telefono-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.telefono-wrapper select {
+    width: 30%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    box-sizing: border-box;
+}
+
+.telefono-wrapper input[type="tel"] {
+    width: 70%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    box-sizing: border-box;
+}
+
+#hint {
+    color: rgba(0, 0, 0, 0.2);
 }
