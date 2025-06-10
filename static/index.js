@@ -156,16 +156,16 @@ async function cercaProfessoriPerMateria(materia) {
     }
 }
 
-function creaElencoProfessori(professori){
+function creaElencoProfessori(professori) {
     professori.forEach(professore => {
         let div1 = $("<div>").prop("title", "Vedi il profilo").addClass("col-lg-3 col-md-6").appendTo(".professori")
         let div2 = $("<div>").addClass("team-member").appendTo(div1)
         let div3 = $("<div>").addClass("main-content").appendTo(div2)
         $("<img>").prop({ "src": "data:image/jpg;base64," + professore["fotoProfilo"], "alt": "" })
-        .on("error", function () {
-            $(this).prop({ "src": "assets/images/defaultPfp.jpg", "alt": "" })
-        })
-        .appendTo(div3)
+            .on("error", function () {
+                $(this).prop({ "src": "assets/images/defaultPfp.jpg", "alt": "" })
+            })
+            .appendTo(div3)
         $("<span>").text(professore["materia"]).addClass("category").appendTo(div3)
         $("<h4>").text(professore["nome"] + " " + professore["cognome"]).appendTo(div3)
         let starContainer = $("<div>").addClass("star-container").appendTo(div3)
@@ -178,7 +178,11 @@ function creaElencoProfessori(professori){
             $("<img>").prop({ "src": "assets/images/grey-star.png", "alt": "" }).appendTo(starContainer)
         }
         let votoFormattato = mediaVoti % 1 === 0 ? mediaVoti.toFixed(0) : mediaVoti.toFixed(1);
-        $("<div>").text("Valutazione: " + votoFormattato + "/5").appendTo(div3);
+        $("<div>").html("Valutazione: " + votoFormattato + "/5").appendTo(div3);
+        $("<div>").text("Modalità: " +
+            (Array.isArray(professore["scelte"]) ? professore["scelte"].join(", ") : "Non specificato")
+        ).appendTo(div3);
+        $("<div>").html("Città: " + professore["citta"]).appendTo(div3);
     });
 }
 

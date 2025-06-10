@@ -269,30 +269,52 @@ app.post('/api/creaRichiestaProfessore', async (req: Request, res: Response) => 
   }
 });
 
-const auth = {
-  "user" : process.env.gmailUser,
-}
+app.delete('/api/deleteRequest', async (req: Request, res: Response) => {
+  const collectionName = "teacherRequests";
+  const id = req.body.id;
 
-app.post('/api/newMail', (req: any, res: any) => {
-  const mail = req.body.mail;
-  const transporter = nodeMailer.createTransport({
-    service: 'gmail',
-    auth: auth
-  });
-  const mailOptions = {
-    from: auth.user,
-    to: mail.to,
-    subject: mail.subject,
-    html: mail.message,
-  };
-  transporter.sendMail(mailOptions, (err, data) => {
-    if (err) {
-      res.status(500).send('Errore invio mail: ' + err.message);
+  const client = new MongoClient(connectionString);
+  try {
+    await client.connect();
+    const collection = client.db(dbName).collection(collectionName);
+
+    const result = await collection.deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      res.status(404).send("Nessun documento trovato con l'id specificato");
     } else {
-      res.send({ ris: 'OK' });
+      res.status(200).send({ message: "Richiesta cancellata con successo" });
     }
-  });
+  } catch (err) {
+    console.error("Errore durante la cancellazione:", err);
+    res.status(500).send(`Errore durante la cancellazione: ${err}`);
+  } finally {
+    await client.close();
+  }
 });
+
+app.post('/api/creaUtenteProfessore', async (req: Request, res: Response) => {
+  const collectionName = "teachers";
+  const account = req.body.account;
+
+  const client = new MongoClient(connectionString);
+  try {
+    await client.connect();
+    const collection = client.db(dbName).collection(collectionName);
+
+    const result = await collection.insertOne(account);
+    res.status(201).send({
+      message: "Account registrato con successo",
+      insertedId: result.insertedId
+    });
+  } catch (err) {
+    console.error("Errore inserimento account:", err);
+    res.status(500).send(`Errore inserimento account: ${err}`);
+  } finally {
+    await client.close();
+  }
+});
+
 /* ********************** Default Route & Error Handler ********************** */
 app.use('/', (req: Request, res: Response) => {
   res.status(404);

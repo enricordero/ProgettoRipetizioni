@@ -51,14 +51,32 @@ $(document).ready(function () {
                                 text: 'Richiesta accettata con successo, password generata casualmente mandata via whatsapp',
                                 icon: 'success',
                             })
+                            
+                            //deleteRequest(richiestaProfessore._id)
 
                             let password = generaPasswordCasuale()
+
+                            let account = {
+                                email: richiestaProfessore.email,
+                                password,
+                                nome: richiestaProfessore.nome,
+                                cognome: richiestaProfessore.cognome,
+                                materia: richiestaProfessore.materia,
+                                scelte: richiestaProfessore.scelte,
+                                citta: richiestaProfessore.citta,
+                                telefono: richiestaProfessore.telefono,
+                                numeroValutazioni: 0,
+                                sommaValutazioni: 0
+                            }
+
+                            creaUtenteProfessore(account)
 
                             const numero = richiestaProfessore.telefono;
                             const messaggio = encodeURIComponent(
                                 `Gentile utente,\nla informiamo che la sua richiesta di registrazione alla piattaforma SkillUp è stata approvata e il suo account è stato creato con successo.\n\nDi seguito le credenziali per effettuare l'accesso:\n*Email*: ${richiestaProfessore.email}\n*Password*: ${password}\n_(la password è stata generata casualmente)_`
                             );
                             window.open(`https://wa.me/${numero}?text=${messaggio}`, '_blank');
+
                         }
                         else {
                             Swal.fire({
@@ -96,16 +114,17 @@ $(document).ready(function () {
                             const motivazione = result.value;
                             Swal.fire({
                                 title: `Richiesta rifiutata!`,
-                                html: `<b>Motivo</b>: ${motivazione}`,
+                                html: `<b>Motivazione</b>: ${motivazione}`,
                                 icon: 'info'
                             });
+
+                            deleteRequest(richiestaProfessore._id)
 
                             const numero = richiestaProfessore.telefono;
                             const messaggio = encodeURIComponent(
                                 `Gentile utente,\nla informiamo che la sua richiesta di registrazione alla piattaforma SkillUp è stata rifiutata.\n\n*Motivazione*: ${motivazione}`
                             );
                             window.open(`https://wa.me/${numero}?text=${messaggio}`, '_blank');
-
 
                         } else {
                             Swal.fire({
@@ -131,5 +150,21 @@ $(document).ready(function () {
             password += caratteri.charAt(indiceCasuale);
         }
         return password;
+    }
+
+    async function deleteRequest(id) {
+        const request = await inviaRichiesta("DELETE", "/api/deleteRequest", { id })
+        if (request.status == 200) {
+            console.log("Richiesta cancellata dal database")
+        }
+    }
+
+    async function creaUtenteProfessore(account) {
+        const request = await inviaRichiesta("POST", "/api/creaUtenteProfessore", { account });
+        if (request.data) {
+            console.log("Account creato:", account);
+        } else {
+            alert("Errore durante la creazione dell'account");
+        }
     }
 })
