@@ -5,6 +5,12 @@ window.onload = function () {
     const divCourses = $("#courses")
     let materie = []
 
+    getUtenteLoggato().then(user => {
+        if (user) {
+            console.log("Utente loggato:", user);    
+        }
+    });
+
     getIndirizzi()
     getMiglioriProfessori()
 
@@ -132,13 +138,61 @@ window.onload = function () {
         }
     }
 
-
     async function getMiglioriProfessori() {
         const request = await inviaRichiesta("GET", "/api/getBestProfessors")
         if (request.data.length > 0) {
             $(".professori").empty()
             creaElencoProfessori(request.data)
         }
+    }
+
+    async function getUtenteLoggato() {
+        const request = await inviaRichiesta("GET", "/api/me");
+        if (request.status === 200) {
+            console.log("Utente loggato:", request.data);
+        } else {
+            console.warn("Utente non loggato o token scaduto:", request.err);
+        }
+    }
+
+    function creaElencoProfessori(professori) {
+        professori.forEach(professore => {
+            let div1 = $("<div>").prop("title", "Vedi il profilo").addClass("col-lg-3 col-md-6").appendTo(".professori")
+            let div2 = $("<div>").addClass("team-member").appendTo(div1)
+            let div3 = $("<div>").addClass("main-content").appendTo(div2)
+            $("<img>").prop({ "src": "data:image/jpg;base64," + professore["fotoProfilo"], "alt": "" })
+            .on("error", function () {
+                $(this).prop({ "src": "assets/images/defaultPfp.jpg", "alt": "" })
+            })
+            .appendTo(div3)
+            $("<span>").text(professore["materia"]).addClass("category").appendTo(div3)
+            $("<h4>").text(professore["nome"] + " " + professore["cognome"]).appendTo(div3)
+            let starContainer = $("<div>").addClass("star-container").appendTo(div3)
+            let mediaVoti = 0
+            if (professore["numeroValutazioni"] != 0) {
+                mediaVoti = professore["sommaValutazioni"] / professore["numeroValutazioni"]
+            }
+            let nStelle = arrotondaVoto(mediaVoti)
+            for (let i = 0; i < nStelle; i++) {
+                $("<img>").prop({ "src": "assets/images/gold-star.png", "alt": "" }).appendTo(starContainer)
+            }
+            for (let i = 0; i < 5 - nStelle; i++) {
+                $("<img>").prop({ "src": "assets/images/grey-star.png", "alt": "" }).appendTo(starContainer)
+            }
+            let votoFormattato = mediaVoti % 1 === 0 ? mediaVoti.toFixed(0) : mediaVoti.toFixed(1);
+            let p = $("<p>").prop("id", "container").css("text-align", "left").appendTo(div3)
+            $("<div>").html("<b>Valutazione: </b>" + votoFormattato + "/5").appendTo(p);
+            $("<div>").html("<b>Numero di valutazioni: </b>" + professore["numeroValutazioni"]).appendTo(p);
+            $("<div>").html("<b>Modalità: </b>" +
+                (Array.isArray(professore["scelte"]) ? professore["scelte"].join(", ") : "Non specificato")
+            ).appendTo(p);
+            $("<div>").html("<b>Città: </b>" + professore["citta"]).appendTo(p);
+        });
+    }
+    
+    function arrotondaVoto(voto) {
+        const decimale = voto - Math.floor(voto);
+        return decimale < 0.6 ? Math.floor(voto) : Math.ceil(voto);
     }
 }
 
@@ -154,44 +208,4 @@ async function cercaProfessoriPerMateria(materia) {
     else {
         $(".professori").text("Al momento non ci sono professori registrati per la materia " + materia)
     }
-}
-
-function creaElencoProfessori(professori) {
-    professori.forEach(professore => {
-        let div1 = $("<div>").prop("title", "Vedi il profilo").addClass("col-lg-3 col-md-6").appendTo(".professori")
-        let div2 = $("<div>").addClass("team-member").appendTo(div1)
-        let div3 = $("<div>").addClass("main-content").appendTo(div2)
-        $("<img>").prop({ "src": "data:image/jpg;base64," + professore["fotoProfilo"], "alt": "" })
-            .on("error", function () {
-                $(this).prop({ "src": "assets/images/defaultPfp.jpg", "alt": "" })
-            })
-            .appendTo(div3)
-        $("<span>").text(professore["materia"]).addClass("category").appendTo(div3)
-        $("<h4>").text(professore["nome"] + " " + professore["cognome"]).appendTo(div3)
-        let starContainer = $("<div>").addClass("star-container").appendTo(div3)
-        let mediaVoti = 0
-        if(professore["numeroValutazioni"] != 0){
-            mediaVoti = professore["sommaValutazioni"] / professore["numeroValutazioni"]
-        }
-        let nStelle = arrotondaVoto(mediaVoti)
-        for (let i = 0; i < nStelle; i++) {
-            $("<img>").prop({ "src": "assets/images/gold-star.png", "alt": "" }).appendTo(starContainer)
-        }
-        for (let i = 0; i < 5 - nStelle; i++) {
-            $("<img>").prop({ "src": "assets/images/grey-star.png", "alt": "" }).appendTo(starContainer)
-        }
-        let votoFormattato = mediaVoti % 1 === 0 ? mediaVoti.toFixed(0) : mediaVoti.toFixed(1);
-        let p = $("<p>").prop("id", "container").css("text-align", "left").appendTo(div3)
-        $("<div>").html("<b>Valutazione: </b>" + votoFormattato + "/5").appendTo(p);
-        $("<div>").html("<b>Numero di valutazioni: </b>" + professore["numeroValutazioni"]).appendTo(p);
-        $("<div>").html("<b>Modalità: </b>" +
-            (Array.isArray(professore["scelte"]) ? professore["scelte"].join(", ") : "Non specificato")
-        ).appendTo(p);
-        $("<div>").html("<b>Città: </b>" + professore["citta"]).appendTo(p);
-    });
-}
-
-function arrotondaVoto(voto) {
-    const decimale = voto - Math.floor(voto);
-    return decimale < 0.6 ? Math.floor(voto) : Math.ceil(voto);
 }

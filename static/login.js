@@ -10,6 +10,16 @@ $(document).ready(function () {
     const btnAccedi = $("#btnLogin")
     const btnInfoMaterie = $("#infoMaterieBtn")
 
+    btnAccedi.on("click", async function(){
+        let email = $("#loginEmail").val()
+        let password = $("#loginPassword").val()
+        const request = await inviaRichiesta("POST", "/api/login", {email, password})
+        if(request.status == 200){
+            alert("Login effettuato")
+            window.location.href = "./index.html"
+        }
+    })
+
     btnInfoMaterie.on("click", function () {
         getMaterie()
     })
@@ -83,21 +93,11 @@ $(document).ready(function () {
             return;
         }
 
-        async function hashPassword(password) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(password);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        const hashedPassword = await hashPassword(password);
-
         const account = {
             nome: nome,
             cognome: cognome,
             email: email,
-            password: hashedPassword
+            password: password
         };
 
         const request = await inviaRichiesta("POST", "/api/creaUtenteStudente", { account })
@@ -121,8 +121,6 @@ $(document).ready(function () {
         }
 
     });
-
-
 
     document.getElementById("btnRegisterTeacher").addEventListener("click", async function (e) {
         const nome = document.getElementById("name-teacher").value.trim();

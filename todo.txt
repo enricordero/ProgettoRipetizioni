@@ -1,6 +1,6 @@
 - recensioni
 - pagina profilo
-- accesso funzionante (farei anche a meno di jwt)
 - prenota lezione
 - scrivere pagamento
 - togliere eventi
+- fare i vari tipi di accesso (e dal server pure)

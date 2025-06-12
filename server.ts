@@ -4,7 +4,10 @@ import express, { NextFunction, Request, Response } from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
 import dotenv from 'dotenv';
 import cors, { CorsOptions } from 'cors';
-import nodeMailer from 'nodemailer';
+import fileUpload from 'express-fileupload';
+import jwt from 'jsonwebtoken';
+import cookieParser from 'cookie-parser';
+import bcrypt, { compare } from 'bcrypt';
 
 /* ********************** HTTP server ********************** */
 dotenv.config({ path: ".env" });
@@ -27,6 +30,19 @@ function init() {
     }
   });
 }
+
+const tokenExpiresIn = 3600; // 1 ora
+const privateKey = fs.readFileSync('./keys/privateKey.pem', 'utf8');
+const publicKey = fs.readFileSync('./keys/publicKey.crt', 'utf8');
+const jwtKey = fs.readFileSync('./keys/jwtKey', 'utf8');
+
+const cookiesOptions = {
+  path: '/',
+  maxAge: tokenExpiresIn * 1000,
+  httpOnly: true,
+  secure: true,
+  sameSite: false
+};
 /* ********************** Middleware ********************** */
 // 1. Request log
 app.use('/', (req: Request, res: Response, next: NextFunction) => {
@@ -40,6 +56,7 @@ app.use('/', express.static('./static'));
 // 3. Body params
 app.use('/', express.json({ limit: '50mb' })); // Parsifica i parametri in formato json
 app.use('/', express.urlencoded({ limit: '50mb', extended: true })); // Parsifica i parametri urlencoded
+app.use(cookieParser());
 
 // 4. Params log
 app.use('/', (req, res, next) => {
@@ -61,6 +78,7 @@ const whitelist = [
   'http://localhost:4200', // server angular
   'https://cordovaapp' // porta 443 (default)
 ];
+
 const corsOptions: CorsOptions = {
   origin: function (origin, callback) {
     if (!origin)
@@ -76,23 +94,88 @@ const corsOptions: CorsOptions = {
 app.use('/', cors(corsOptions));
 
 /* ********************** Client routes ********************** */
-app.get('/api/getUsers', async (req: Request, res: Response) => {
-  let collectionName = "users"
+function createToken(data: any) {
+  const now = Math.floor(Date.now() / 1000); // Tempo corrente in secondi
+  const payload = {
+    iat: now,
+    exp: now + tokenExpiresIn,
+    _id: data._id,
+    username: data.username,
+    admin: data.admin || false
+  };
+  return jwt.sign(payload, jwtKey);
+}
 
-  const client = new MongoClient(connectionString);
-  await client.connect();
-  const collection = client.db(dbName).collection(collectionName);
+// Middleware per verificare il token JWT
+function verifyToken(req: any, res: any, next: any) {
+  const token = req.cookies.token;
+  if (!token) {
+    console.error("Token mancante.");
+    return res.status(401).send({ err: "Token mancante. Effettua nuovamente il login." });
+  }
 
-  const request = collection.find().toArray();
-  request.catch((err) => {
-    res.status(500).send(`Errore esecuzione query: ${err}`);
+  jwt.verify(token, jwtKey, (err, payload: any) => {
+    if (err) {
+      console.error("Errore nella verifica del token:", err.message);
+      if (err.name === "TokenExpiredError") {
+        console.error("Token scaduto.");
+        return res.status(401).send({ err: "Token scaduto. Effettua nuovamente il login." });
+      }
+      return res.status(401).send({ err: "Token non valido. Effettua nuovamente il login." });
+    }
+
+    req["payload"] = payload;
+    next();
   });
-  request.then((data) => {
-    res.send(data);
-  });
-  request.finally(() => {
-    client.close();
-  });
+}
+
+app.post('/api/login', async (req: any, res: any) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    console.error('Email o password mancanti.');
+    return res.status(400).send({ err: 'Username e password sono obbligatori.' });
+  }
+
+  try {
+    const client = new MongoClient(connectionString);
+    await client.connect();
+    const collection = client.db(dbName).collection('students');
+
+    const user = await collection.findOne({ email });
+    console.log('Utente trovato:', user);
+
+    if (!user) {
+      console.error('Utente non trovato.');
+      return res.status(401).send({ err: 'Email o password non validi.' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log('Password nel DB:', user.password);
+    console.log('Password fornita:', password);
+    console.log('Esito confronto bcrypt:', isPasswordValid);
+
+    if (!isPasswordValid) {
+      console.error('Password non valida.');
+      return res.status(401).send({ err: 'Email o password non validi.' });
+    }
+
+    const token = createToken(user);
+    console.log('Token generato:', token);
+    console.log('Utente autenticato:', { email: user.email, id: user._id });
+
+    res.cookie('token', token, cookiesOptions);
+    res.send({ ris: 'ok', email: user.email, id: user._id });
+  } catch (err) {
+    console.error('Errore durante il login:', err);
+    res.status(500).send({ err: 'Errore interno del server.' });
+  }
+});
+
+
+app.post('/api/logout', (req: Request, res: Response) => {
+  res.clearCookie('token');
+  res.send({ ris: 'Logout effettuato con successo.' });
 });
 
 app.get('/api/getSpecializzazioni', async (req: Request, res: Response) => {
@@ -324,7 +407,16 @@ app.post('/api/creaUtenteStudente', async (req: Request, res: Response) => {
     await client.connect();
     const collection = client.db(dbName).collection(collectionName);
 
-    const result = await collection.insertOne(account);
+    let hashedPassword = await bcrypt.hash(account.password, 10)
+
+    let accountWithHashedPassword = {
+      nome: account.nome,
+      cognome: account.cognome,
+      email: account.email,
+      password: hashedPassword
+    }
+
+    const result = await collection.insertOne(accountWithHashedPassword);
     res.status(201).send({
       message: "Account registrato con successo",
       insertedId: result.insertedId
@@ -335,6 +427,17 @@ app.post('/api/creaUtenteStudente', async (req: Request, res: Response) => {
   } finally {
     await client.close();
   }
+});
+
+app.get('/api/me', verifyToken, (req: Request, res: Response) => {
+  const payload = (req as any).payload;
+
+  res.send({
+    id: payload._id,
+    nome: payload.nome,
+    cognome: payload.cognome,
+    email: payload.email
+  });
 });
 
 /* ********************** Default Route & Error Handler ********************** */
