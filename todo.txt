@@ -1,5 +1,6 @@
 - recensioni
 - pagina profilo
-- accesso funzionante (con jwt)
-- regex mail (^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)
-- registrazione prof presenza/casa e più di una materia
+- accesso funzionante (farei anche a meno di jwt)
+- prenota lezione
+- scrivere pagamento
+- togliere eventi

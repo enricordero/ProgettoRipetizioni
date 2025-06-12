@@ -315,6 +315,28 @@ app.post('/api/creaUtenteProfessore', async (req: Request, res: Response) => {
   }
 });
 
+app.post('/api/creaUtenteStudente', async (req: Request, res: Response) => {
+  const collectionName = "students";
+  const account = req.body.account;
+
+  const client = new MongoClient(connectionString);
+  try {
+    await client.connect();
+    const collection = client.db(dbName).collection(collectionName);
+
+    const result = await collection.insertOne(account);
+    res.status(201).send({
+      message: "Account registrato con successo",
+      insertedId: result.insertedId
+    });
+  } catch (err) {
+    console.error("Errore inserimento account:", err);
+    res.status(500).send(`Errore inserimento account: ${err}`);
+  } finally {
+    await client.close();
+  }
+});
+
 /* ********************** Default Route & Error Handler ********************** */
 app.use('/', (req: Request, res: Response) => {
   res.status(404);

@@ -44,21 +44,30 @@ $(document).ready(function () {
                         showCancelButton: true,
                         confirmButtonText: 'Sì',
                         cancelButtonText: 'No',
-                    }).then((result) => {
+                    }).then(async (result) => {
                         if (result.isConfirmed) {
                             Swal.fire({
                                 title: 'Richiesta accettata',
                                 text: 'Richiesta accettata con successo, password generata casualmente mandata via whatsapp',
                                 icon: 'success',
                             })
-                            
-                            //deleteRequest(richiestaProfessore._id)
+
+                            deleteRequest(richiestaProfessore._id)
 
                             let password = generaPasswordCasuale()
+                            async function hashPassword(password) {
+                                const encoder = new TextEncoder();
+                                const data = encoder.encode(password);
+                                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                            }
+
+                            const hashedPassword = await hashPassword(password);
 
                             let account = {
                                 email: richiestaProfessore.email,
-                                password,
+                                password: hashedPassword,
                                 nome: richiestaProfessore.nome,
                                 cognome: richiestaProfessore.cognome,
                                 materia: richiestaProfessore.materia,
@@ -76,6 +85,7 @@ $(document).ready(function () {
                                 `Gentile utente,\nla informiamo che la sua richiesta di registrazione alla piattaforma SkillUp è stata approvata e il suo account è stato creato con successo.\n\nDi seguito le credenziali per effettuare l'accesso:\n*Email*: ${richiestaProfessore.email}\n*Password*: ${password}\n_(la password è stata generata casualmente)_`
                             );
                             window.open(`https://wa.me/${numero}?text=${messaggio}`, '_blank');
+
 
                         }
                         else {

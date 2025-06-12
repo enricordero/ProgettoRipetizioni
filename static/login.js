@@ -54,35 +54,133 @@ $(document).ready(function () {
         }
     })
 
+    document.getElementById("btnRegisterStudent").addEventListener("click", async function () {
+        const nome = document.getElementById("nome-studente").value.trim();
+        const cognome = document.getElementById("cognome-studente").value.trim();
+        const email = document.getElementById("email-studente").value.trim();
+        const password = document.getElementById("password-studente").value;
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>/?]).{8,}$/;
+
+        if (nome === "") {
+            alert("Il nome non può essere vuoto.");
+            return;
+        }
+
+        if (cognome === "") {
+            alert("Il cognome non può essere vuoto.");
+            return;
+        }
+
+        if (!emailRegex.test(email)) {
+            alert("Inserisci un'email valida.");
+            return;
+        }
+
+        if (!passwordRegex.test(password)) {
+            alert("La password deve essere di almeno 8 caratteri, contenere almeno un numero e un carattere speciale.");
+            return;
+        }
+
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        const hashedPassword = await hashPassword(password);
+
+        const account = {
+            nome: nome,
+            cognome: cognome,
+            email: email,
+            password: hashedPassword
+        };
+
+        const request = await inviaRichiesta("POST", "/api/creaUtenteStudente", { account })
+        if (request.status == 200) {
+            console.log("Account studente creato con successo!");
+
+            const alertBox = document.getElementById("successAlert");
+            alertBox.style.display = "block";
+            alertBox.style.opacity = "0.8";
+
+            setTimeout(() => {
+                alertBox.style.opacity = "0";
+                alertBox.addEventListener("transitionend", () => {
+                    alertBox.style.display = "none";
+                }, { once: true });
+            }, 3000);
+
+            loginSection.show();
+            registerSectionStudent.hide();
+            registerSectionTeacher.hide();
+        }
+
+    });
+
+
+
     document.getElementById("btnRegisterTeacher").addEventListener("click", async function (e) {
+        const nome = document.getElementById("name-teacher").value.trim();
+        const cognome = document.getElementById("cognome-teacher").value.trim();
+        const email = document.getElementById("email-teacher").value.trim();
+        const citta = document.getElementById("residenza").value.trim();
         const presenza = document.getElementById("presenza").checked;
         const online = document.getElementById("online").checked;
         const difficolta = document.getElementById("difficolta").checked;
+        const materia = document.getElementById("materia").value.trim();
+        const prefix = document.getElementById("prefix").value.trim();
+        const phoneNumber = document.getElementById("phone-teacher").value.trim();
+        const fullPhone = prefix + phoneNumber.replace(/\s+/g, '');
+        const cvFile = document.getElementById("cv-upload").files[0];
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (!nome) {
+            alert("Il nome non può essere vuoto.");
+            return;
+        }
+        if (!cognome) {
+            alert("Il cognome non può essere vuoto.");
+            return;
+        }
+        if (!emailRegex.test(email)) {
+            alert("Inserisci un'email valida.");
+            return;
+        }
+        if (!citta) {
+            alert("La città non può essere vuota.");
+            return;
+        }
 
         let scelte = [];
         if (!presenza && !online) {
             e.preventDefault();
             alert("Seleziona almeno una disponibilità");
+            return;
         } else {
             if (presenza) scelte.push("Presenza");
             if (online) scelte.push("Online");
             if (difficolta) scelte.push("Difficolta");
-
             console.log(scelte.join(", "));
         }
 
-        const nome = document.getElementById("name-teacher").value;
-        const cognome = document.getElementById("cognome-teacher").value;
-        const email = document.getElementById("email-teacher").value;
-        const citta = document.getElementById("residenza").value;
-        const materia = document.getElementById("materia").value;
-        const prefix = document.getElementById("prefix").value;
-        const phoneNumber = document.getElementById("phone-teacher").value;
-        const fullPhone = prefix + phoneNumber.replace(/\s+/g, '');
-        const cvFile = document.getElementById("cv-upload").files[0];
+        if (!materia) {
+            alert("La materia non può essere vuota.");
+            return;
+        }
+        const phoneDigits = phoneNumber.replace(/\D/g, '');
+        if (phoneDigits.length !== 10) {
+            alert("Il numero di telefono deve contenere esattamente 10 cifre");
+            return;
+        }
 
-        if (!nome || !cognome || !email || !citta || !materia || !cvFile) {
-            alert("Per favore, compila tutti i campi obbligatori.");
+        if (!cvFile) {
+            alert("Per favore carica il CV");
             return;
         }
 
@@ -96,7 +194,7 @@ $(document).ready(function () {
                 materia,
                 citta,
                 scelte,
-                "telefono": fullPhone,
+                telefono: fullPhone,
                 cvBase64
             };
 
@@ -113,6 +211,7 @@ $(document).ready(function () {
             alert("Errore durante la lettura dei file.");
         }
     });
+
 
     // Funzione per convertire il file in una stringa base64 senza il prefisso MIME
     function fileToBase64(file) {

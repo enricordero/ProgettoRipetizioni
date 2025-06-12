@@ -16,7 +16,7 @@ window.onload = function () {
 
     $("#report-feedback").on("click", function () {
         Swal.fire({
-            title: "Segnala un FeedBack",
+            title: "Scrivi",
             background: "#5163e8",
             color: "#fff",
             html: `
@@ -169,7 +169,10 @@ function creaElencoProfessori(professori) {
         $("<span>").text(professore["materia"]).addClass("category").appendTo(div3)
         $("<h4>").text(professore["nome"] + " " + professore["cognome"]).appendTo(div3)
         let starContainer = $("<div>").addClass("star-container").appendTo(div3)
-        let mediaVoti = professore["sommaValutazioni"] / professore["numeroValutazioni"]
+        let mediaVoti = 0
+        if(professore["numeroValutazioni"] != 0){
+            mediaVoti = professore["sommaValutazioni"] / professore["numeroValutazioni"]
+        }
         let nStelle = arrotondaVoto(mediaVoti)
         for (let i = 0; i < nStelle; i++) {
             $("<img>").prop({ "src": "assets/images/gold-star.png", "alt": "" }).appendTo(starContainer)
@@ -178,11 +181,13 @@ function creaElencoProfessori(professori) {
             $("<img>").prop({ "src": "assets/images/grey-star.png", "alt": "" }).appendTo(starContainer)
         }
         let votoFormattato = mediaVoti % 1 === 0 ? mediaVoti.toFixed(0) : mediaVoti.toFixed(1);
-        $("<div>").html("Valutazione: " + votoFormattato + "/5").appendTo(div3);
-        $("<div>").text("Modalità: " +
+        let p = $("<p>").prop("id", "container").css("text-align", "left").appendTo(div3)
+        $("<div>").html("<b>Valutazione: </b>" + votoFormattato + "/5").appendTo(p);
+        $("<div>").html("<b>Numero di valutazioni: </b>" + professore["numeroValutazioni"]).appendTo(p);
+        $("<div>").html("<b>Modalità: </b>" +
             (Array.isArray(professore["scelte"]) ? professore["scelte"].join(", ") : "Non specificato")
-        ).appendTo(div3);
-        $("<div>").html("Città: " + professore["citta"]).appendTo(div3);
+        ).appendTo(p);
+        $("<div>").html("<b>Città: </b>" + professore["citta"]).appendTo(p);
     });
 }
 
