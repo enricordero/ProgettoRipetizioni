@@ -1745,6 +1745,16 @@ footer::before {
   z-index: 2;
 }
 
+.swal2-title-custom {
+    color: #5163e8;
+    font-weight: 600;
+}
+
+.swal2-card {
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
 /* 
 ---------------------------------------------
 Responsive Style

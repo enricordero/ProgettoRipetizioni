@@ -1,6 +1,2 @@
 - recensioni
-- pagina profilo
-- prenota lezione
-- scrivere pagamento
-- togliere eventi
-- fare i vari tipi di accesso (e dal server pure)
+- sistemare professori

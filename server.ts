@@ -170,11 +170,80 @@ app.post('/api/login', async (req: any, res: any) => {
   }
 });
 
-
 app.post('/api/logout', (req: Request, res: Response) => {
   res.clearCookie('token');
   res.send({ ris: 'Logout effettuato con successo.' });
 });
+
+app.get('/api/getUtente',verifyToken, async (req: any, res: any) => {
+  let collectionName = "students";
+  let id = req.query.id as string;
+
+  if (!id) {
+    return res.status(400).json({ error: "Parametro id mancante" });
+  }
+
+  const client = new MongoClient(connectionString);
+  try {
+    await client.connect();
+    const collection = client.db(dbName).collection(collectionName);
+
+    const data = await collection.findOne(
+      { _id: new ObjectId(id) },
+      { projection: { _id: 1, nome: 1, cognome: 1 } }
+    );
+
+    if (!data) {
+      return res.status(404).json({ error: "Utente non trovato" });
+    }
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: `Errore esecuzione query: ${err}` });
+  } finally {
+    await client.close();
+  }
+});
+
+
+app.patch('/api/aggiornaValutazione', async (req: any, res: any) => {
+  const collectionName = "teachers";
+  const id = req.body.id;
+  const valutazione = Number(req.body.valutazione);
+
+  if (!id || isNaN(valutazione)) {
+    return res.status(400).send('Parametri mancanti o non validi');
+  }
+
+  const client = new MongoClient(connectionString);
+  try {
+    await client.connect();
+    const collection = client.db(dbName).collection(collectionName);
+
+    const updateResult = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $inc: {
+          sommaValutazioni: valutazione,
+          numeroValutazioni: 1
+        }
+      }
+    );
+
+    if (updateResult.matchedCount === 0) {
+      return res.status(404).send('Professore non trovato');
+    }
+
+    const updatedDoc = await collection.findOne({ _id: new ObjectId(id) });
+
+    res.status(200).send(updatedDoc);
+  } catch (err) {
+    res.status(500).send(`Errore esecuzione query: ${err}`);
+  } finally {
+    await client.close();
+  }
+});
+
 
 app.get('/api/getSpecializzazioni', async (req: Request, res: Response) => {
   let collectionName = "subjects"
