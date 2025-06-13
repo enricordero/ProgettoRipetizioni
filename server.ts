@@ -131,6 +131,7 @@ function verifyToken(req: any, res: any, next: any) {
 
 app.post('/api/login', async (req: any, res: any) => {
   const { email, password } = req.body;
+  const collectionName = req.body.codice
 
   if (!email || !password) {
     console.error('Email o password mancanti.');
@@ -140,7 +141,7 @@ app.post('/api/login', async (req: any, res: any) => {
   try {
     const client = new MongoClient(connectionString);
     await client.connect();
-    const collection = client.db(dbName).collection('students');
+    const collection = client.db(dbName).collection(collectionName);
 
     const user = await collection.findOne({ email });
     console.log('Utente trovato:', user);
@@ -151,9 +152,6 @@ app.post('/api/login', async (req: any, res: any) => {
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log('Password nel DB:', user.password);
-    console.log('Password fornita:', password);
-    console.log('Esito confronto bcrypt:', isPasswordValid);
 
     if (!isPasswordValid) {
       console.error('Password non valida.');

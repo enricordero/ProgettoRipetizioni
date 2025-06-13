@@ -35,6 +35,12 @@
         <h2>Accedi</h2>
         <div id="formLogin">
             <p>Campo obbligatorio *</p>
+            <select id="tipoUtente">
+                <option data-codice="students">Studente</option>
+                <option data-codice="teachers">Professore</option>
+                <option data-codice="admin">Admin</option>
+            </select>
+            <br><br>
             <input id="loginEmail" type="email" class="email" name="email" placeholder="Email *"><br><br>
             <input id="loginPassword" type="password" class="password" name="password" placeholder="Password *"><br><br>
             <button type="submit" id="btnLogin">ACCEDI</button>

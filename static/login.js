@@ -10,13 +10,25 @@ $(document).ready(function () {
     const btnAccedi = $("#btnLogin")
     const btnInfoMaterie = $("#infoMaterieBtn")
 
-    btnAccedi.on("click", async function(){
+    btnAccedi.on("click", async function () {
         let email = $("#loginEmail").val()
         let password = $("#loginPassword").val()
-        const request = await inviaRichiesta("POST", "/api/login", {email, password})
-        if(request.status == 200){
-            alert("Login effettuato")
-            window.location.href = "./index.html"
+        let codice = $('#tipoUtente option:selected').data('codice')
+        console.log(codice)
+        if (!email || !password) {
+            alert("Compilare i campi obbligatori")
+        }
+        else {
+            const request = await inviaRichiesta("POST", "/api/login", { email, password, codice })
+            if (request.status == 200) {
+                alert("Login effettuato")
+                if (codice == "students" || codice == "teachers") {
+                    window.location.href = "./index.html"
+                }
+                else if (codice == "admin") {
+                    window.location.href = "./admin.html"
+                }
+            }
         }
     })
 
