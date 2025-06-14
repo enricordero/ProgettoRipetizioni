@@ -1,18 +1,69 @@
 "use strict"
 
+async function getRecensioni() {
+    const request = await inviaRichiesta("GET", "/api/getRecensioni");
+
+    if (request.status === 200) {
+        const carousel = $("#carouselRecensioni");
+        carousel.empty();
+
+        request.data.forEach(recensione => {
+            let divItem = $("<div>").addClass("item");
+            $("<p>").text(`“${recensione.messaggio}”`).appendTo(divItem);
+            let divAuthor = $("<div>").addClass("author").appendTo(divItem);
+            $("<img>").attr({ src: "assets/images/defaultPfp.jpg", alt: "" }).appendTo(divAuthor);
+            let dataISO = recensione.data;
+            let dataFormattata = new Date(dataISO).toLocaleDateString('it-IT');
+            $("<span>").addClass("category").text(dataFormattata + " - " + recensione.codice).appendTo(divAuthor);
+            $("<h4>").text(`${recensione.nome} ${recensione.cognome}`).appendTo(divAuthor);
+            carousel.append(divItem);
+        });
+
+        carousel.owlCarousel({
+            items: 1,
+            loop: true,
+            margin: 30,
+            autoplay: true,
+            autoplayTimeout: 5000,
+            autoplayHoverPause: true,
+            nav: true,
+            navText: [
+                '<i class="fa fa-chevron-left"></i>',
+                '<i class="fa fa-chevron-right"></i>'
+            ],
+            dots: true
+        });
+
+    }
+}
+
+
+
 window.onload = function () {
+    const codice = sessionStorage.getItem("codice");
+    const currentPage = window.location.pathname.split("/").pop();
+
+    if ((codice === null || codice.trim() === "") && currentPage !== "login.html") {
+        alert("Effettua il login per proseguire")
+        window.location.href = "./login.html";
+    }
     const elencoIndirizzi = $("#elencoIndirizzi")
     const divCourses = $("#courses")
     let materie = []
+    let nomeUtente = ""
+    let cognomeUtente = ""
+    const loggedUserId = localStorage.getItem("userId");
+    if (loggedUserId) {
+        console.log("Utente loggato con ID:", loggedUserId);
+        getDatiUtente(loggedUserId)
+    } else {
+        console.log("Nessun utente loggato");
+    }
 
-    getUtenteLoggato().then(user => {
-        if (user) {
-            console.log("Utente loggato:", user);
-        }
-    });
 
     getIndirizzi()
     getMiglioriProfessori()
+    getRecensioni()
 
     divCourses.find(".event_filter").find("a").on("click", function () {
         let indirizzo = ($(this).prop("id"))
@@ -26,53 +77,51 @@ window.onload = function () {
             background: "#5163e8",
             color: "#fff",
             html: `
-            <div>
-                <input type="name" name="name" id="name" placeholder="Nome" autocomplete="on">
-                <input type="text" name="email" id="email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" placeholder="Email">
-                <textarea name="message" id="message" placeholder="Lascia un messaggio..."></textarea>
-            </div>    
-                <style>
-                    input {
-                        width: 100%;
-                        height: 50px;
-                        border-radius: 25px;
-                        background-color: rgba(249, 235, 255, 0.15);
-                        border: none;
-                        outline: none;
-                        font-weight: 300;
-                        padding: 0px 20px;
-                        font-size: 14px;
-                        color: #fff;
-                        margin-bottom: 30px;
-                        position: relative;
-                        z-index: 3;
-                    }
+                    <div>
+                        <textarea name="message" id="message" placeholder="Lascia un messaggio..."></textarea>
+                    </div>    
+                        <style>
+                        input {
+                            width: 100%;
+                            height: 50px;
+                            border-radius: 25px;
+                            background-color: rgba(249, 235, 255, 0.15);
+                            border: none;
+                            outline: none;
+                            font-weight: 300;
+                            padding: 0px 20px;
+                            font-size: 14px;
+                            color: #fff;
+                            margin-bottom: 30px;
+                            position: relative;
+                            z-index: 3;
+                        }
 
-                    input::placeholder {
-                        color: #fff;
-                    }
+                        input::placeholder {
+                            color: #fff;
+                        }
 
-                    textarea {
-                        width: 100%;
-                        height: 120px;
-                        border-radius: 25px;
-                        background-color: rgba(249, 235, 255, 0.15);
-                        border: none;
-                        outline: none;
-                        font-weight: 300;
-                        padding: 20px;
-                        font-size: 14px;
-                        color: #fff;
-                        margin-bottom: 30px;
-                        position: relative;
-                        z-index: 3;
-                    }
+                        textarea {
+                            width: 100%;
+                            height: 120px;
+                            border-radius: 25px;
+                            background-color: rgba(249, 235, 255, 0.15);
+                            border: none;
+                            outline: none;
+                            font-weight: 300;
+                            padding: 20px;
+                            font-size: 14px;
+                            color: #fff;
+                            margin-bottom: 30px;
+                            position: relative;
+                            z-index: 3;
+                        }
 
-                    textarea::placeholder {
-                        color: #fff;
-                    }
-                </style>
-            `,
+                        textarea::placeholder {
+                            color: #fff;
+                        }
+                    </style>
+                `,
             confirmButtonText: "Invia",
             showCancelButton: true,
             cancelButtonText: "Annulla",
@@ -81,7 +130,33 @@ window.onload = function () {
                 confirmButton: 'btn-custom-invia',
                 cancelButton: 'btn-custom-annulla'
             }
-        })
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const message = document.getElementById("message").value;
+                let tipoUtente
+                if(codice == "students"){
+                    tipoUtente = "Studente"
+                }
+                else if(codice == "teachers"){
+                    tipoUtente = "Insegnante"
+                }
+
+                let nuovaRecensione = {
+                    codice: tipoUtente,
+                    cognome: localStorage.getItem("cognomeUtente"),
+                    nome: localStorage.getItem("nomeUtente"),
+                    data: new Date(),
+                    messaggio: message,
+                }
+
+                console.log(nuovaRecensione)
+                const request = await inviaRichiesta("POST", "/api/nuovaRecensione", { nuovaRecensione })
+                if(request.status == 200){
+                    Swal.fire('Grazie!', 'La tua recensione è stata registrata', 'success');
+                }
+            }
+        });
+
     })
 
     async function getIndirizzi() {
@@ -138,19 +213,13 @@ window.onload = function () {
         }
     }
 
-    async function getUtenteLoggato() {
-        const request = await inviaRichiesta("GET", "/api/me");
-        if (request.status === 200) {
-            console.log("Utente loggato:", request.data.id);
-            let id = request.data.id
-            const response = await inviaRichiesta("GET", "/api/getUtente", {id})
-            if(response.status == 200){
+    async function getDatiUtente(id) {
+        const response = await inviaRichiesta("GET", "/api/getUtente", { id, collectionName: codice })
+            if (response.status == 200) {
                 console.log(response.data)
+                localStorage.setItem("nomeUtente", response.data.nome)
+                localStorage.setItem("cognomeUtente", response.data.cognome)
             }
-            
-        } else {
-            console.warn("Utente non loggato o token scaduto:", request.err);
-        }
     }
 }
 
@@ -173,21 +242,21 @@ function creaElencoProfessori(professori) {
                                 <p><strong>Città:</strong> ${professore["citta"]}</p>
                                 <p><strong>A disposizione:</strong> ${professore["scelte"]?.join(", ") || "Non specificato"}</p>
                                 <p><strong>Media:</strong> ${professore["numeroValutazioni"] > 0
-                                                ? (function () {
-                                                    const media = professore["sommaValutazioni"] / professore["numeroValutazioni"];
-                                                    return Number.isInteger(media) ? media + "/5" : media.toFixed(1) + "/5";
-                                                })()
-                                                : "N.D."
-                                            }</p>
+                            ? (function () {
+                                const media = professore["sommaValutazioni"] / professore["numeroValutazioni"];
+                                return Number.isInteger(media) ? media + "/5" : media.toFixed(1) + "/5";
+                            })()
+                            : "N.D."
+                        }</p>
                                         
                                 ${professore["scelte"]?.includes("Difficolta")
-                                                ? `
+                            ? `
                                     <hr style="margin: 20px 0;">
                                     <h4 style="color: #5163e8; margin-bottom: 5px;">Eventuali note</h4>
                                     <p>Il tutor accetta ragazzi con difficoltà nell'apprendimento.</p>
                                     `
-                                                : ""
-                                            }
+                            : ""
+                        }
                                         
                                 <hr style="margin: 20px 0;">
                                 <h4 style="color: #5163e8; margin-bottom: 5px;">Contatti</h4>
@@ -244,9 +313,8 @@ function creaElencoProfessori(professori) {
                             }
                         }).then(async (res) => {
                             if (res.isConfirmed) {
-                                console.log('Valutazione scelta:', res.value);
-                                const request = await inviaRichiesta("PATCH", "/api/aggiornaValutazione", {id: professore._id, valutazione: res.value})
-                                if(request.status == 200){
+                                const request = await inviaRichiesta("PATCH", "/api/aggiornaValutazione", { id: professore._id, valutazione: res.value })
+                                if (request.status == 200) {
                                     Swal.fire('Grazie!', 'La tua valutazione è stata registrata.', 'success');
                                     getMiglioriProfessori()
                                 }
@@ -311,7 +379,6 @@ function arrotondaVoto(voto) {
 
 async function cercaProfessoriPerMateria(materia) {
     let formattedMateria = materia.toLowerCase().trim().replace(/_/g, "")
-    console.log(materia, formattedMateria)
     const request = await inviaRichiesta("GET", "/api/getProfessoriPerMateria", { materia: formattedMateria })
     if (request.data.length > 0) {
         $(".professori").empty()
@@ -324,9 +391,9 @@ async function cercaProfessoriPerMateria(materia) {
 }
 
 async function getMiglioriProfessori() {
-        const request = await inviaRichiesta("GET", "/api/getBestProfessors")
-        if (request.data.length > 0) {
-            $(".professori").empty()
-            creaElencoProfessori(request.data)
-        }
+    const request = await inviaRichiesta("GET", "/api/getBestProfessors")
+    if (request.data.length > 0) {
+        $(".professori").empty()
+        creaElencoProfessori(request.data)
     }
+}

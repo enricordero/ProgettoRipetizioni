@@ -19,11 +19,15 @@ $(document).ready(function () {
             alert("Compilare i campi obbligatori")
         }
         else {
-            const request = await inviaRichiesta("POST", "/api/login", { email, password, codice })
+            const request = await inviaRichiesta("POST", "/api/login", { email, password, codice });
             if (request.status == 200) {
-                alert("Login effettuato")
+                alert("Login effettuato");
+                const userId = request.data.id;
+
                 if (codice == "students" || codice == "teachers") {
-                    window.location.href = "./index.html"
+                    sessionStorage.setItem("codice", codice);
+                    localStorage.setItem("userId", userId);
+                    window.location.href = "./index.html";
                 }
                 else if (codice == "admin") {
                     window.location.href = "./admin.html"

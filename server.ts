@@ -176,7 +176,7 @@ app.post('/api/logout', (req: Request, res: Response) => {
 });
 
 app.get('/api/getUtente',verifyToken, async (req: any, res: any) => {
-  let collectionName = "students";
+  let { collectionName } = req.query;
   let id = req.query.id as string;
 
   if (!id) {
@@ -491,6 +491,56 @@ app.post('/api/creaUtenteStudente', async (req: Request, res: Response) => {
   } catch (err) {
     console.error("Errore inserimento account:", err);
     res.status(500).send(`Errore inserimento account: ${err}`);
+  } finally {
+    await client.close();
+  }
+});
+
+app.get('/api/getRecensioni', async (req: Request, res: Response) => {
+  const collectionName = "feedback";
+  const client = new MongoClient(connectionString);
+
+  try {
+    await client.connect();
+    const collection = client.db(dbName).collection(collectionName);
+
+    const data = await collection
+      .find()
+      .sort({ data: -1 })
+      .limit(5)          
+      .toArray();
+
+    res.send(data);
+  } catch (err) {
+    res.status(500).send(`Errore esecuzione query: ${err}`);
+  } finally {
+    await client.close();
+  }
+});
+
+app.post('/api/nuovaRecensione', async (req: any, res: any) => {
+  const collectionName = "feedback";
+  const nuovaRecensione = req.body.nuovaRecensione;
+
+  if (!nuovaRecensione || !nuovaRecensione.messaggio) {
+    return res.status(400).send({ message: "Dati recensione mancanti o incompleti" });
+  }
+
+  const client = new MongoClient(connectionString);
+
+  try {
+    await client.connect();
+    const collection = client.db(dbName).collection(collectionName);
+
+    const result = await collection.insertOne(nuovaRecensione);
+
+    res.status(200).send({
+      message: "Recensione inserita con successo",
+      insertedId: result.insertedId
+    });
+  } catch (err) {
+    console.error("Errore inserimento recensione:", err);
+    res.status(500).send(`Errore inserimento recensione: ${err}`);
   } finally {
     await client.close();
   }
