@@ -130,27 +130,29 @@ window.onload = function () {
             }
         }).then(async (result) => {
             if (result.isConfirmed) {
-                const message = document.getElementById("message").value;
-                let tipoUtente
-                if(codice == "students"){
-                    tipoUtente = "Studente"
-                }
-                else if(codice == "teachers"){
-                    tipoUtente = "Insegnante"
-                }
+                if (loggedUserId != null) {
+                    const message = document.getElementById("message").value;
+                    let tipoUtente
+                    if (codice == "students") {
+                        tipoUtente = "Studente"
+                    }
+                    else if (codice == "teachers") {
+                        tipoUtente = "Insegnante"
+                    }
 
-                let nuovaRecensione = {
-                    codice: tipoUtente,
-                    cognome: localStorage.getItem("cognomeUtente"),
-                    nome: localStorage.getItem("nomeUtente"),
-                    data: new Date(),
-                    messaggio: message,
-                }
+                    let nuovaRecensione = {
+                        codice: tipoUtente,
+                        cognome: localStorage.getItem("cognomeUtente"),
+                        nome: localStorage.getItem("nomeUtente"),
+                        data: new Date(),
+                        messaggio: message,
+                    }
 
-                console.log(nuovaRecensione)
-                const request = await inviaRichiesta("POST", "/api/nuovaRecensione", { nuovaRecensione })
-                if(request.status == 200){
-                    Swal.fire('Grazie!', 'La tua recensione è stata registrata', 'success');
+                    console.log(nuovaRecensione)
+                    const request = await inviaRichiesta("POST", "/api/nuovaRecensione", { nuovaRecensione })
+                    if (request.status == 200) {
+                        Swal.fire('Grazie!', 'La tua recensione è stata registrata', 'success');
+                    }
                 }
             }
         });
@@ -213,11 +215,11 @@ window.onload = function () {
 
     async function getDatiUtente(id) {
         const response = await inviaRichiesta("GET", "/api/getUtente", { id, collectionName: codice })
-            if (response.status == 200) {
-                console.log(response.data)
-                localStorage.setItem("nomeUtente", response.data.nome)
-                localStorage.setItem("cognomeUtente", response.data.cognome)
-            }
+        if (response.status == 200) {
+            console.log(response.data)
+            localStorage.setItem("nomeUtente", response.data.nome)
+            localStorage.setItem("cognomeUtente", response.data.cognome)
+        }
     }
 }
 
@@ -378,14 +380,14 @@ function arrotondaVoto(voto) {
 async function cercaProfessoriPerMateria(materia) {
     let formattedMateria = materia.toLowerCase().trim().replace(/_/g, "")
     const request = await inviaRichiesta("GET", "/api/getProfessoriPerMateria", { materia: formattedMateria })
-    if (request.data.length > 0) {
-        $(".professori").empty()
-        creaElencoProfessori(request.data)
-        $(".event_box").hide()
+    $(".professori").empty()
+    creaElencoProfessori(request.data)
+    $(".event_box").hide()
+    if (request.data.length === 0) {
+        let materiaLeggibile = materia.replace(/_/g, " ").toLowerCase().trim();
+        $(".professori").html(`Al momento non ci sono professori registrati per la materia <b>${materiaLeggibile}</b>`);
     }
-    else {
-        $(".professori").text("Al momento non ci sono professori registrati per la materia " + materia)
-    }
+
 }
 
 async function getMiglioriProfessori() {
