@@ -24,9 +24,9 @@ $(document).ready(function () {
                 alert("Login effettuato");
                 const userId = request.data.id;
                 
+                sessionStorage.setItem("codice", codice);
+                localStorage.setItem("userId", userId);
                 if (codice == "students" || codice == "teachers") {
-                    sessionStorage.setItem("codice", codice);
-                    localStorage.setItem("userId", userId);
                     window.location.href = "./index.html";
                 }
                 else if (codice == "admin") {
@@ -39,23 +39,6 @@ $(document).ready(function () {
     $('#mySelect').select2({
       placeholder: "Scegli una o più materie",
       width: 'resolve'
-    });
-
-    // Rimuovi elemento cliccandoci sopra
-    $(document).on('click', '.select2-selection__choice', function () {
-        console.log($(this).val())
-      const value = $(this).data('select2-id'); // ID interno
-      const text = $(this).text().trim();
-      const select = $('#mySelect');
-
-      // Trova l'option corrispondente
-      const option = select.find('option').filter(function () {
-        return $(this).text() === text;
-      });
-
-      // Deselect
-      option.prop('selected', false);
-      select.trigger('change');
     });
     
     getMaterie()

@@ -1,1 +1,1 @@
-- sistemare il login quando professore
+- sistemare grafica index se professore
