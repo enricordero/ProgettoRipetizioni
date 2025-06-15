@@ -50,8 +50,6 @@ window.onload = function () {
     const elencoIndirizzi = $("#elencoIndirizzi")
     const divCourses = $("#courses")
     let materie = []
-    let nomeUtente = ""
-    let cognomeUtente = ""
     const loggedUserId = localStorage.getItem("userId");
     if (loggedUserId) {
         console.log("Utente loggato con ID:", loggedUserId);

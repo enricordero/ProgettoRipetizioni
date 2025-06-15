@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="./login.css" />
     <title>Benvenuto</title>
 </head>
@@ -72,11 +73,20 @@
                 <i id="hint">è possibile selezionare più di una modalità</i>
             </div>
             <br>
-            <div class="materia-wrapper">
-                <input type="text" class="materia" id="materia" name="materia"
-                    placeholder="Materie (separale con una virgola) *">
-                <button type="button" id="infoMaterieBtn" class="info-materie-btn">?</button>
+            <div class="select2-wrapper">
+                <select multiple="multiple" id="mySelect">
+                    <option value="apple">Mela</option>
+                    <option value="banana">Banana</option>
+                    <option value="cherry">Ciliegia</option>
+                    <option value="orange">Arancia</option>
+                    <option value="grape">Uva</option>
+                    <option value="pineapple">Ananas</option>
+                    <option value="watermelon">Anguria</option>
+                </select>
+                <button type="button" class="info-materie-btn open-select2"
+                    onclick="$('#mySelect').select2('open');">+</button>
             </div>
+
             <br>
             <div class="telefono-wrapper">
                 <select id="prefix">
@@ -122,6 +132,7 @@
     <script src="./jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="./libreria.js"></script>
     <script src="./login.js"></script>
     <script src="./index.js"></script>

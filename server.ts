@@ -152,6 +152,9 @@ app.post('/api/login', async (req: any, res: any) => {
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log("Password inserita:", password)
+    console.log("Password database: ", user.password)
+    console.log("Password validata: ", isPasswordValid)
 
     if (!isPasswordValid) {
       console.error('Password non valida.');
@@ -447,6 +450,12 @@ app.post('/api/creaUtenteProfessore', async (req: Request, res: Response) => {
   const collectionName = "teachers";
   const account = req.body.account;
 
+  console.log(req.body.account.password);
+
+  const hashedPassword = await bcrypt.hash(account.password, 10);
+
+  account.password = hashedPassword;
+
   const client = new MongoClient(connectionString);
   try {
     await client.connect();
@@ -464,6 +473,7 @@ app.post('/api/creaUtenteProfessore', async (req: Request, res: Response) => {
     await client.close();
   }
 });
+
 
 app.post('/api/creaUtenteStudente', async (req: Request, res: Response) => {
   const collectionName = "students";

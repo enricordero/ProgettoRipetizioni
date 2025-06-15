@@ -23,7 +23,7 @@ $(document).ready(function () {
             if (request.status == 200) {
                 alert("Login effettuato");
                 const userId = request.data.id;
-
+                
                 if (codice == "students" || codice == "teachers") {
                     sessionStorage.setItem("codice", codice);
                     localStorage.setItem("userId", userId);
@@ -35,11 +35,40 @@ $(document).ready(function () {
             }
         }
     })
+    
+    $('#mySelect').select2({
+      placeholder: "Scegli una o più materie",
+      width: 'resolve'
+    });
 
-    btnInfoMaterie.on("click", function () {
-        getMaterie()
-    })
+    // Rimuovi elemento cliccandoci sopra
+    $(document).on('click', '.select2-selection__choice', function () {
+        console.log($(this).val())
+      const value = $(this).data('select2-id'); // ID interno
+      const text = $(this).text().trim();
+      const select = $('#mySelect');
 
+      // Trova l'option corrispondente
+      const option = select.find('option').filter(function () {
+        return $(this).text() === text;
+      });
+
+      // Deselect
+      option.prop('selected', false);
+      select.trigger('change');
+    });
+    
+    getMaterie()
+
+    $('#seeMat').on('click', function () {
+      const selectedValues = $('#mySelect').val();
+
+      if (selectedValues && selectedValues.length > 0) {
+        alert("Hai selezionato: " + selectedValues.join(", "));
+      } else {
+        alert("Nessuna materia selezionata");
+      }
+    });
 
     aLogin.on("click", function () {
         loginSection.show()
@@ -146,7 +175,14 @@ $(document).ready(function () {
         const presenza = document.getElementById("presenza").checked;
         const online = document.getElementById("online").checked;
         const difficolta = document.getElementById("difficolta").checked;
-        const materia = document.getElementById("materia").value.trim();
+        
+        let materia
+        const selectedValues = $('#mySelect').val();
+        if (selectedValues && selectedValues.length > 0) {
+          materia = selectedValues.join(", ");
+        } else {
+          alert("Nessuna materia selezionata");
+        }
         const prefix = document.getElementById("prefix").value.trim();
         const phoneNumber = document.getElementById("phone-teacher").value.trim();
         const fullPhone = prefix + phoneNumber.replace(/\s+/g, '');
@@ -218,7 +254,7 @@ $(document).ready(function () {
             if (request.data) {
                 console.log("Account creato:", account);
             } else {
-                alert("Errore durante la registrazione.");
+                alert("Errore inaspettato durante la creazione dell'account, riprova.");
             }
         } catch (error) {
             console.error("Errore nella creazione dell'account:", error);
@@ -257,43 +293,8 @@ $(document).ready(function () {
     async function getMaterie() {
         const request = await inviaRichiesta("GET", "/api/getMaterie")
         if (request.status == 200) {
-            Swal.fire({
-                title: 'Materie',
-                html: `<div id="divMaterie"><p>Le materie disponibili sono le seguenti:</p></div><br><br>`,
-                icon: "info",
-                customClass: {
-                    popup: 'swal-materie-popup',
-                    title: 'swal-materie-title',
-                    htmlContainer: 'swal-materie-html'
-                },
-                didOpen: () => {
-                    const ul = $("<ul>").appendTo("#divMaterie").css({
-                        'display': 'flex',
-                        'flex-wrap': 'wrap',
-                        'list-style-type': 'none',
-                        'padding': '0',
-                        'margin': '0',
-                        'gap': '15px',
-                    });
-
-                    request.data.forEach(materia => {
-                        $("<li>").text(materia)
-                            .css({
-                                'font-size': '16px',
-                                'color': '#333',
-                                'margin-bottom': '8px',
-                                'font-family': '"Segoe UI", sans-serif',
-                                'position': 'relative',
-                                'padding': '15px',
-                                'width': '15%',
-                                'box-sizing': 'border-box',
-                                'border': '1px solid #ddd',
-                                'border-radius': '10px',
-                            })
-                            .prepend('<i class="fa fa-check-circle" style="position:absolute; left:0; top:0; color:#4caf50; font-size:18px;"></i>')
-                            .appendTo(ul);
-                    });
-                }
+            request.data.forEach(materia => {
+                $("<option>").val(materia).text(materia).appendTo("#mySelect")
             });
         }
     }

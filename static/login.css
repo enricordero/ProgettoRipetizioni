@@ -109,6 +109,63 @@ a:hover {
     cursor: pointer;
 }
 
+.select2-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.select2-container {
+  flex: 1;
+  max-width: 100%;
+}
+
+/* Select2 multiple coerente */
+.select2-container--default .select2-selection--multiple {
+  min-height: 46px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 2px solid #ddd;
+  box-sizing: border-box;
+  background-color: white;
+  font-size: 15px;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Assicura che non venga troncato il placeholder */
+.select2-selection__rendered {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 6px;
+}
+
+.select2-selection__placeholder {
+  color: #888;
+  font-size: 15px;
+}
+
+/* Coerenza tag selezionati */
+.select2-selection__choice {
+  background-color: #687aff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  color: white !important;
+  padding: 4px 10px !important;
+  margin: 2px !important;
+}
+
+/* X dei tag */
+.select2-selection__choice__remove {
+  color: white !important;
+  margin-right: 6px !important;
+}
+
+
 /* Modifica la larghezza del pop-up */
 .swal2-popup {
     width: 80% !important;

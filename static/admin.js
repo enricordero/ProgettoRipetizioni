@@ -55,19 +55,10 @@ $(document).ready(function () {
                             deleteRequest(richiestaProfessore._id)
 
                             let password = generaPasswordCasuale()
-                            async function hashPassword(password) {
-                                const encoder = new TextEncoder();
-                                const data = encoder.encode(password);
-                                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-                                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                            }
-
-                            const hashedPassword = await hashPassword(password);
 
                             let account = {
                                 email: richiestaProfessore.email,
-                                password: hashedPassword,
+                                password: password,
                                 nome: richiestaProfessore.nome,
                                 cognome: richiestaProfessore.cognome,
                                 materia: richiestaProfessore.materia,
