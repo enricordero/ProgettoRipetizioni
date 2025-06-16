@@ -47,7 +47,7 @@ $(document).ready(function () {
     })
 
     $('#mySelect').select2({
-        placeholder: "Scegli una o più materie",
+        placeholder: "Materia/e *",
         width: 'resolve'
     });
 

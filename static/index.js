@@ -43,14 +43,20 @@ window.onload = function () {
     const codice = sessionStorage.getItem("codice");
     const currentPage = window.location.pathname.split("/").pop();
 
-    $("#logout").on("click", function(){
+    $("#logout").on("click", function () {
         sessionStorage.clear();
         localStorage.clear()
     })
 
     if ((codice === null || codice.trim() === "") && currentPage !== "login.html") {
-        alert("Effettua il login per proseguire")
-        window.location.href = "./login.html";
+        Swal.fire({
+            title: "Attenzione: accesso non autorizzato",
+            text: "Devi essere loggato per poter accedere a questa pagina",
+            icon: "warning",
+        }).then(() => {
+            window.location.href = "./login.html";
+
+        })
     }
     const elencoIndirizzi = $("#elencoIndirizzi")
     const divCourses = $("#courses")
@@ -153,7 +159,6 @@ window.onload = function () {
                         messaggio: message,
                     }
 
-                    console.log(nuovaRecensione)
                     const request = await inviaRichiesta("POST", "/api/nuovaRecensione", { nuovaRecensione })
                     if (request.status == 200) {
                         Swal.fire('Grazie!', 'La tua recensione è stata registrata', 'success');
@@ -221,7 +226,6 @@ window.onload = function () {
     async function getDatiUtente(id) {
         const response = await inviaRichiesta("GET", "/api/getUtente", { id, collectionName: codice })
         if (response.status == 200) {
-            console.log(response.data)
             localStorage.setItem("nomeUtente", response.data.nome)
             localStorage.setItem("cognomeUtente", response.data.cognome)
         }
