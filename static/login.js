@@ -323,7 +323,7 @@ $(document).ready(function () {
                     icon: "success",
                     confirmButtonText: "Ok",
                 }).then(() => {
-                    window.location.href = "/";
+                    window.location.href = "./login.html";
                 })
             } else {
                 Swal.fire({
