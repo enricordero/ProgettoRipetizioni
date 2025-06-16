@@ -16,41 +16,51 @@ $(document).ready(function () {
         let codice = $('#tipoUtente option:selected').data('codice')
         console.log(codice)
         if (!email || !password) {
-            alert("Compilare i campi obbligatori")
+            Swal.fire({
+                title: "Attenzione",
+                text: "Compilare tutti i campi!",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            })
         }
         else {
             const request = await inviaRichiesta("POST", "/api/login", { email, password, codice });
             if (request.status == 200) {
-                alert("Login effettuato");
                 const userId = request.data.id;
-                
                 sessionStorage.setItem("codice", codice);
                 localStorage.setItem("userId", userId);
-                if (codice == "students" || codice == "teachers") {
-                    window.location.href = "./index.html";
-                }
-                else if (codice == "admin") {
-                    window.location.href = "./admin.html"
-                }
+
+                Swal.fire({
+                    title: "Login effettuato",
+                    icon: "success",
+                    confirmButtonText: "Ok",
+                }).then(() => {
+                    if (codice == "students" || codice == "teachers") {
+                        window.location.href = "./index.html";
+                    }
+                    else if (codice == "admin") {
+                        window.location.href = "./admin.html"
+                    }
+                })
             }
         }
     })
-    
+
     $('#mySelect').select2({
-      placeholder: "Scegli una o più materie",
-      width: 'resolve'
+        placeholder: "Scegli una o più materie",
+        width: 'resolve'
     });
-    
+
     getMaterie()
 
     $('#seeMat').on('click', function () {
-      const selectedValues = $('#mySelect').val();
+        const selectedValues = $('#mySelect').val();
 
-      if (selectedValues && selectedValues.length > 0) {
-        alert("Hai selezionato: " + selectedValues.join(", "));
-      } else {
-        alert("Nessuna materia selezionata");
-      }
+        if (selectedValues && selectedValues.length > 0) {
+            console.log("Hai selezionato: " + selectedValues.join(", "));
+        } else {
+            console.log("Nessuna materia selezionata");
+        }
     });
 
     aLogin.on("click", function () {
@@ -102,22 +112,42 @@ $(document).ready(function () {
         const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>/?]).{8,}$/;
 
         if (nome === "") {
-            alert("Il nome non può essere vuoto.");
+            Swal.fire({
+                title: "Attenzione",
+                text: "Il nome non può essere vuoto!",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            })
             return;
         }
 
         if (cognome === "") {
-            alert("Il cognome non può essere vuoto.");
+            Swal.fire({
+                title: "Attenzione",
+                text: "Il cognome non può essere vuoto!",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            })
             return;
         }
 
         if (!emailRegex.test(email)) {
-            alert("Inserisci un'email valida.");
+            Swal.fire({
+                title: "Attenzione",
+                text: "Inserisci un email valida!",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            })
             return;
         }
 
         if (!passwordRegex.test(password)) {
-            alert("La password deve essere di almeno 8 caratteri, contenere almeno un numero e un carattere speciale.");
+            Swal.fire({
+                title: "Attenzione",
+                text: "La password deve contenere almeno 8 caratteri, di cui almeno un numero e un carattere speciale",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            })
             return;
         }
 
@@ -147,6 +177,14 @@ $(document).ready(function () {
             registerSectionStudent.hide();
             registerSectionTeacher.hide();
         }
+        else if (request.status == 400) {
+            Swal.fire({
+                title: "Email già in uso",
+                text: "L'email inserita è già associata a un account.",
+                icon: "error",
+                confirmButtonText: "Ok",
+            })
+        }
 
     });
 
@@ -158,13 +196,18 @@ $(document).ready(function () {
         const presenza = document.getElementById("presenza").checked;
         const online = document.getElementById("online").checked;
         const difficolta = document.getElementById("difficolta").checked;
-        
+
         let materia
         const selectedValues = $('#mySelect').val();
         if (selectedValues && selectedValues.length > 0) {
-          materia = selectedValues.join(", ");
+            materia = selectedValues.join(", ");
         } else {
-          alert("Nessuna materia selezionata");
+            Swal.fire({
+                title: "Nessuna materia selezionata",
+                text: "Devi selezionare almeno una materia per poter procedere con la registrazione",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            })
         }
         const prefix = document.getElementById("prefix").value.trim();
         const phoneNumber = document.getElementById("phone-teacher").value.trim();
@@ -174,26 +217,51 @@ $(document).ready(function () {
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
         if (!nome) {
-            alert("Il nome non può essere vuoto.");
+            Swal.fire({
+                title: "Attenzione",
+                text: "Il nome non può essere vuoto!",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            })
             return;
         }
         if (!cognome) {
-            alert("Il cognome non può essere vuoto.");
+            Swal.fire({
+                title: "Attenzione",
+                text: "Il cognome non può essere vuoto!",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            })
             return;
         }
         if (!emailRegex.test(email)) {
-            alert("Inserisci un'email valida.");
+            Swal.fire({
+                title: "Attenzione",
+                text: "Inserisci un email valida!",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            })
             return;
         }
         if (!citta) {
-            alert("La città non può essere vuota.");
+            Swal.fire({
+                title: "Attenzione",
+                text: "La città non può essere vuota!",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            })
             return;
         }
 
         let scelte = [];
         if (!presenza && !online) {
             e.preventDefault();
-            alert("Seleziona almeno una disponibilità");
+            Swal.fire({
+                title: "Attenzione",
+                text: "Seleziona almeno una disponibilità tra online e presenza!",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            })
             return;
         } else {
             if (presenza) scelte.push("Presenza");
@@ -203,17 +271,32 @@ $(document).ready(function () {
         }
 
         if (!materia) {
-            alert("La materia non può essere vuota.");
+            Swal.fire({
+                title: "Nessuna materia selezionata",
+                text: "Devi selezionare almeno una materia per poter procedere con la registrazione!",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            })
             return;
         }
         const phoneDigits = phoneNumber.replace(/\D/g, '');
         if (phoneDigits.length !== 10) {
-            alert("Il numero di telefono deve contenere esattamente 10 cifre");
+            Swal.fire({
+                title: "Attenzione",
+                text: "Il numero di telefono deve contenere almeno 10 cifre!",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            })
             return;
         }
 
         if (!cvFile) {
-            alert("Per favore carica il CV");
+            Swal.fire({
+                title: "Attenzione",
+                text: "Il CV non può essere vuoto. Assicurati di aver caricato un file in formato .pdf",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            })
             return;
         }
 
@@ -231,13 +314,24 @@ $(document).ready(function () {
                 cvBase64
             };
 
-            console.log(account);
 
             const request = await inviaRichiesta("POST", "/api/creaRichiestaProfessore", { account });
             if (request.data) {
-                console.log("Account creato:", account);
+                Swal.fire({
+                    title: "Richiesta inviata",
+                    text: "La tua richiesta di registrazione è stata inviata. Attendi che un admin verifichi la tua richiesta e ti invii il risultato via Whatsapp",
+                    icon: "success",
+                    confirmButtonText: "Ok",
+                }).then(() => {
+                    window.location.href = "/";
+                })
             } else {
-                alert("Errore inaspettato durante la creazione dell'account, riprova.");
+                Swal.fire({
+                    title: "Errore",
+                    text: "Errore inaspettato. Riprova",
+                    icon: "warning",
+                    confirmButtonText: "Ok",
+                })
             }
         } catch (error) {
             console.error("Errore nella creazione dell'account:", error);

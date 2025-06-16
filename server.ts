@@ -462,7 +462,7 @@ app.post('/api/creaUtenteProfessore', async (req: Request, res: Response) => {
     const collection = client.db(dbName).collection(collectionName);
 
     const result = await collection.insertOne(account);
-    res.status(201).send({
+    res.status(200).send({
       message: "Account registrato con successo",
       insertedId: result.insertedId
     });
@@ -475,7 +475,7 @@ app.post('/api/creaUtenteProfessore', async (req: Request, res: Response) => {
 });
 
 
-app.post('/api/creaUtenteStudente', async (req: Request, res: Response) => {
+app.post('/api/creaUtenteStudente', async (req: any, res: any) => {
   const collectionName = "students";
   const account = req.body.account;
 
@@ -484,14 +484,21 @@ app.post('/api/creaUtenteStudente', async (req: Request, res: Response) => {
     await client.connect();
     const collection = client.db(dbName).collection(collectionName);
 
-    let hashedPassword = await bcrypt.hash(account.password, 10)
+    const existingUser = await collection.findOne({ email: account.email });
+    if (existingUser) {
+      return res.status(400).send({
+        message: "Esiste già un account registrato con questa email."
+      });
+    }
+
+    let hashedPassword = await bcrypt.hash(account.password, 10);
 
     let accountWithHashedPassword = {
       nome: account.nome,
       cognome: account.cognome,
       email: account.email,
       password: hashedPassword
-    }
+    };
 
     const result = await collection.insertOne(accountWithHashedPassword);
     res.status(201).send({
@@ -505,6 +512,7 @@ app.post('/api/creaUtenteStudente', async (req: Request, res: Response) => {
     await client.close();
   }
 });
+
 
 app.get('/api/getRecensioni', async (req: Request, res: Response) => {
   const collectionName = "feedback";

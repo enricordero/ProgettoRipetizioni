@@ -43,6 +43,11 @@ window.onload = function () {
     const codice = sessionStorage.getItem("codice");
     const currentPage = window.location.pathname.split("/").pop();
 
+    $("#logout").on("click", function(){
+        sessionStorage.clear();
+        localStorage.clear()
+    })
+
     if ((codice === null || codice.trim() === "") && currentPage !== "login.html") {
         alert("Effettua il login per proseguire")
         window.location.href = "./login.html";
