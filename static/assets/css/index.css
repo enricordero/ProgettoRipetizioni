@@ -1745,6 +1745,11 @@ footer::before {
   z-index: 2;
 }
 
+footer img{
+  width: 13px;
+  height: 13px;
+}
+
 .swal2-title-custom {
     color: #5163e8;
     font-weight: 600;

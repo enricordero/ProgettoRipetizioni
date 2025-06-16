@@ -42,6 +42,9 @@ async function getRecensioni() {
 window.onload = function () {
     const codice = sessionStorage.getItem("codice");
     const currentPage = window.location.pathname.split("/").pop();
+    $("#courses").show()
+    $("#team").show()
+    $("#INostriInsegnanti").show()
 
     $("#logout").on("click", function () {
         sessionStorage.clear();
@@ -58,6 +61,18 @@ window.onload = function () {
 
         })
     }
+
+    if (codice == "students") {
+        $("#courses").show()
+        $("#team").show()
+        $("#INostriInsegnanti").show()
+    }
+    if (codice == "teachers") {
+        $("#courses").hide()
+        $("#team").hide()
+        $("#INostriInsegnanti").hide()
+    }
+
     const elencoIndirizzi = $("#elencoIndirizzi")
     const divCourses = $("#courses")
     let materie = []
