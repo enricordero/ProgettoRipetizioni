@@ -43,6 +43,14 @@ $(document).ready(function () {
                     }
                 })
             }
+            else {
+                Swal.fire({
+                    title: "Errore",
+                    text: "Email o password errate. Riprova",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                })
+            }
         }
     })
 
