@@ -95,7 +95,7 @@ app.use('/', cors(corsOptions));
 
 /* ********************** Client routes ********************** */
 function createToken(data: any) {
-  const now = Math.floor(Date.now() / 1000); // Tempo corrente in secondi
+  const now = Math.floor(Date.now() / 1000);
   const payload = {
     iat: now,
     exp: now + tokenExpiresIn,
@@ -106,7 +106,6 @@ function createToken(data: any) {
   return jwt.sign(payload, jwtKey);
 }
 
-// Middleware per verificare il token JWT
 function verifyToken(req: any, res: any, next: any) {
   const token = req.cookies.token;
   if (!token) {
@@ -152,9 +151,6 @@ app.post('/api/login', async (req: any, res: any) => {
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log("Password inserita:", password)
-    console.log("Password database: ", user.password)
-    console.log("Password validata: ", isPasswordValid)
 
     if (!isPasswordValid) {
       console.error('Password non valida.');
@@ -209,7 +205,7 @@ app.get('/api/getUtente',verifyToken, async (req: any, res: any) => {
 });
 
 
-app.patch('/api/aggiornaValutazione', async (req: any, res: any) => {
+app.patch('/api/aggiornaValutazione', verifyToken, async (req: any, res: any) => {
   const collectionName = "teachers";
   const id = req.body.id;
   const valutazione = Number(req.body.valutazione);
@@ -396,7 +392,7 @@ app.get('/api/getRichieste', async (req: Request, res: Response) => {
   });
 });
 
-app.post('/api/creaRichiestaProfessore', async (req: Request, res: Response) => {
+app.post('/api/creaRichiestaProfessore', verifyToken, async (req: Request, res: Response) => {
   const collectionName = "teacherRequests";
   const account = req.body.account;
 
@@ -536,7 +532,7 @@ app.get('/api/getRecensioni', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/api/nuovaRecensione', async (req: any, res: any) => {
+app.post('/api/nuovaRecensione', verifyToken, async (req: any, res: any) => {
   const collectionName = "feedback";
   const nuovaRecensione = req.body.nuovaRecensione;
 

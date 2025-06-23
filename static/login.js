@@ -126,7 +126,6 @@ $(document).ready(function () {
                 icon: "warning",
                 confirmButtonText: "Ok",
             })
-            return;
         }
 
         if (cognome === "") {
@@ -136,7 +135,6 @@ $(document).ready(function () {
                 icon: "warning",
                 confirmButtonText: "Ok",
             })
-            return;
         }
 
         if (!emailRegex.test(email)) {
@@ -146,7 +144,6 @@ $(document).ready(function () {
                 icon: "warning",
                 confirmButtonText: "Ok",
             })
-            return;
         }
 
         if (!passwordRegex.test(password)) {
@@ -156,7 +153,6 @@ $(document).ready(function () {
                 icon: "warning",
                 confirmButtonText: "Ok",
             })
-            return;
         }
 
         const account = {
@@ -223,7 +219,8 @@ $(document).ready(function () {
         const cvFile = document.getElementById("cv-upload").files[0];
 
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
+        
+        //#region controlli
         if (!nome) {
             Swal.fire({
                 title: "Attenzione",
@@ -307,6 +304,7 @@ $(document).ready(function () {
             })
             return;
         }
+        //#endregion
 
         try {
             const cvBase64 = cvFile ? await fileToBase64(cvFile) : null;
